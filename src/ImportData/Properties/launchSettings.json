@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImportData": {
+      "commandName": "Project",
+      "commandLineArgs": "-n \"Integration Service\" -p \"11111\" -a importcompanies -f \"C:\\Users\\Belov_AlS\\source\\repos\\rx-util-importdata-net-core\\Template\\Example\\Организации.xlsx\""
+    }
+  }
+}

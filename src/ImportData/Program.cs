@@ -59,6 +59,12 @@ namespace ImportData
                 case "importaddendums":
                     EntityProcessor.Procces(typeof(Addendum), xlsxPath, Constants.SheetNames.Addendums, extraParameters, ignoreDuplicates, logger);
                     break;
+                case "importincominginvoice":
+                    EntityProcessor.Procces(typeof(IncomingInvoice), xlsxPath, Constants.SheetNames.IncomingInvoice, extraParameters, ignoreDuplicates, logger);
+                    break;
+                case "importdocumentregister":
+                    EntityProcessor.Procces(typeof(DocumentRegister), xlsxPath, Constants.SheetNames.DocumentRegister, extraParameters, ignoreDuplicates, logger);
+                    break;
                 default:
                     break;
             }

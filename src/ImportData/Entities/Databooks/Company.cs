@@ -7,7 +7,7 @@ namespace ImportData
 {
     class Company : Entity
     {
-        public int PropertiesCount = 22;
+        public int PropertiesCount = 20;
         /// <summary>
         /// Получить наименование число запрашиваемых параметров.
         /// </summary>
@@ -98,6 +98,16 @@ namespace ImportData
                 logger.Warn(message);
             }
 
+            variableForParameters = this.Parameters[shift + 19].Trim();
+            var responsible = BusinessLogic.GetEntityWithFilter<IEmployees>(e => e.Name == variableForParameters, exceptionList, logger);
+
+            if (!string.IsNullOrEmpty(this.Parameters[shift + 19]) && responsible == null)
+            {
+                var message = string.Format("Не найден Ответственный \"{1}\". Наименование организации: \"{0}\". ", name, this.Parameters[shift + 20].Trim());
+                exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
+                logger.Warn(message);
+            }
+
             try
             {
                 // Проверка ИНН.
@@ -159,6 +169,7 @@ namespace ImportData
                 company.Account = account;
                 company.Bank = bank;
                 company.Status = "Active";
+                company.Responsible = responsible;
 
                 BusinessLogic.CreateEntity<ICompanies>(company, exceptionList, logger);
             }

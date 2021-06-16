@@ -7,5 +7,6 @@
         public bool IsCardReadOnly { get; set; }
         public string LegalName { get; set; }
         public ICompanies HeadCompany { get; set; }
+        public IEmployees Responsible { get; set; }
     }
 }
