@@ -7,7 +7,7 @@ namespace ImportData
 {
     class Company : Entity
     {
-        public int PropertiesCount = 20;
+        public int PropertiesCount = 21;
         /// <summary>
         /// Получить наименование число запрашиваемых параметров.
         /// </summary>
@@ -108,6 +108,14 @@ namespace ImportData
                 logger.Warn(message);
             }
 
+            var code = this.Parameters[shift + 20].Trim();
+            if (code.Length > 10)
+            {
+                var message = string.Format("Код должен быть менее 10 символов\"{1}\". Наименование организации: \"{0}\". ", name, this.Parameters[shift + 10].Trim());
+                exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
+                logger.Warn(message);
+            }
+
             try
             {
                 // Проверка ИНН.
@@ -170,6 +178,7 @@ namespace ImportData
                 company.Bank = bank;
                 company.Status = "Active";
                 company.Responsible = responsible;
+                company.Code = code;
 
                 BusinessLogic.CreateEntity<ICompanies>(company, exceptionList, logger);
             }
