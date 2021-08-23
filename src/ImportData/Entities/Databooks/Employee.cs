@@ -54,7 +54,10 @@ namespace ImportData
 
             var middleName = this.Parameters[shift + 4].Trim();
 
-            var person = BusinessLogic.GetEntityWithFilter<IPersons>(x => x.FirstName == firstName && x.MiddleName == middleName && x.LastName == lastName, exceptionList, logger);
+            var person = BusinessLogic.CreateEntity<IPersons>(new IPersons() { FirstName = firstName, MiddleName = middleName, LastName = lastName, Status = "Active" }, exceptionList, logger);
+            
+            // TODO: delete comment if Fix is optional.
+            //var person = BusinessLogic.GetEntityWithFilter<IPersons>(x => x.FirstName == firstName && x.MiddleName == middleName && x.LastName == lastName, exceptionList, logger);
 
             if (person == null)
             {
