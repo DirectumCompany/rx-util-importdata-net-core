@@ -54,7 +54,7 @@ namespace ImportData
 
             var middleName = this.Parameters[shift + 4].Trim();
 
-            var person = BusinessLogic.CreateEntity<IPersons>(new IPersons() { FirstName = firstName, MiddleName = middleName, LastName = lastName, Status = "Active" }, exceptionList, logger);
+            var person = BusinessLogic.CreateEntity<IPersons>(new IPersons() { FirstName = firstName, MiddleName = middleName, LastName = lastName, Name = string.Format("{0} {1} {2}", lastName, firstName, middleName), Status = "Active" }, exceptionList, logger);
 
             if (person == null)
             {
