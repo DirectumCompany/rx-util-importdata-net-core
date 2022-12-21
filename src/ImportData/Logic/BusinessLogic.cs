@@ -108,8 +108,9 @@ namespace ImportData
 
         if (ex.Message.Contains("(Unauthorized)"))
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
+
+        throw ex;
       }
-      return null;
     }
 
     /// <summary>
@@ -135,8 +136,8 @@ namespace ImportData
         if (ex.Message.Contains("(Unauthorized)"))
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
 
+        throw ex;
       }
-      return null;
     }
 
     /// <summary>
@@ -162,8 +163,9 @@ namespace ImportData
 
         if (ex.Message.Contains("(Unauthorized)"))
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
+
+      throw ex;
       }
-      return null;
     }
     #endregion
 
