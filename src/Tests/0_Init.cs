@@ -30,7 +30,7 @@ namespace Tests
         internal static List<ArrayList> ChangeRegNumber(string xlsxPath, string sheetName, int columnNumber, List<ArrayList>? newNumbers = null)
         {
             var logger = TestSettings.Logger;
-            var excelProcessor = new ExcelProcessor(xlsxPath, sheetName, logger);
+            var excelProcessor = new ImportData.Logic.ReaderWriter.ExcelProcessor(xlsxPath, sheetName, logger);
 
             var items = Common.XlsxParse(xlsxPath, sheetName);
             var listArrayParams = new List<ArrayList>();

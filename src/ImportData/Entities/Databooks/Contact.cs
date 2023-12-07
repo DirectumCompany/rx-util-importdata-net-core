@@ -24,7 +24,7 @@ namespace ImportData.Entities.Databooks
         /// <param name="shift">Сдвиг по горизонтали в XLSX документе. Необходим для обработки документов, составленных из элементов разных сущностей.</param>
         /// <param name="logger">Логировщик.</param>
         /// <returns>Число запрашиваемых параметров.</returns>
-        public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, bool supplementEntity, string ignoreDuplicates, int shift = 0)
+        public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, string ignoreDuplicates, int shift = 0)
         {
             var exceptionList = new List<Structures.ExceptionsStruct>();
 
@@ -52,7 +52,8 @@ namespace ImportData.Entities.Databooks
 
             var middleName = this.Parameters[shift + 2].Trim();
 
-            var person = BusinessLogic.CreateEntity<IPersons>(new IPersons() { FirstName = firstName, MiddleName = middleName, LastName = lastName, Name = string.Format("{0} {1} {2}", lastName, firstName, middleName), Status = "Active" }, exceptionList, logger);
+            var person = BusinessLogic.GetEntityWithFilter<IPersons>(x => x.LastName == lastName && x.FirstName == firstName && x.MiddleName == middleName, exceptionList, logger);
+            person ??= BusinessLogic.CreateEntity(new IPersons() { FirstName = firstName, MiddleName = middleName, LastName = lastName, Name = string.Format("{0} {1} {2}", lastName, firstName, middleName), Status = "Active" }, exceptionList, logger);
 
             if (person == null)
             {

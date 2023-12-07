@@ -26,7 +26,7 @@ namespace ImportData
         /// <param name="shift">Сдвиг по горизонтали в XLSX документе. Необходим для обработки документов, составленных из элементов разных сущностей.</param>
         /// <param name="logger">Логировщик.</param>
         /// <returns>Число запрашиваемых параметров.</returns>
-        public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, bool supplementEntity, string ignoreDuplicates, int shift = 0)
+        public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, string ignoreDuplicates, int shift = 0)
         {
             var exceptionList = new List<Structures.ExceptionsStruct>();
             var variableForParameters = this.Parameters[shift + 0].Trim();
@@ -54,8 +54,8 @@ namespace ImportData
                     exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
                     logger.Warn(message);
 
-					return exceptionList;
-				}
+                    return exceptionList;
+                }
 
                 regNumberLeadingDocument = this.Parameters[shift + 2];
                 try

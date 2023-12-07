@@ -25,7 +25,7 @@ namespace ImportData
     /// <param name="supplementEntity">Признак наличия дополнительной сущности.</param>
     /// <param name="ignoreDuplicates">Признак необходимости игнорировать дубликаты.</param>
     /// <returns>Список возникших при сохранении ошибок.</returns>
-    public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, bool supplementEntity, string ignoreDuplicates, int shift = 0)
+    public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, string ignoreDuplicates, int shift = 0)
     {
       var exceptionList = new List<Structures.ExceptionsStruct>();
       var variableForParameters = this.Parameters[shift + 0].Trim();

@@ -28,7 +28,7 @@ namespace ImportData
         /// <param name="logger">Логировщик.</param>
         /// <param name="shift">Сдвиг по горизонтали в XLSX документе. Необходим для обработки документов, составленных из элементов разных сущностей.</param>
         /// <returns>Список ошибок.</returns>
-        public virtual IEnumerable<Structures.ExceptionsStruct> SaveToRX(NLog.Logger logger, bool supplementEntity, string ignoreDuplicates, int shift = 0)
+        public virtual IEnumerable<Structures.ExceptionsStruct> SaveToRX(NLog.Logger logger, string ignoreDuplicates, int shift = 0)
         {
             return new List<Structures.ExceptionsStruct>();
         }

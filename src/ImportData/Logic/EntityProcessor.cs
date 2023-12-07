@@ -5,12 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Reflection;
+using ImportData.Logic.ReaderWriter;
+using ImportData.Logic;
 
 namespace ImportData
 {
   public class EntityProcessor
   {
-    public static void Process(Type type, string xlsxPath, string sheetName, Dictionary<string, string> extraParameters, string searchDoubles, Logger logger)
+    public static void Process(Type type, string filePath, string sheetName, Dictionary<string, string> extraParameters, Logger logger)
     {
       if (type.Equals(typeof(Entity)))
       {
@@ -22,61 +28,45 @@ namespace ImportData
       Type wrapperType = genericType.MakeGenericType(typeArgs);
       object processor = Activator.CreateInstance(wrapperType);
       var getEntity = wrapperType.GetMethod("GetEntity");
-      bool supplementEntity = false;
-      var supplementEntityList = new List<string>();
 
+      var emptyEntity = (Entity)getEntity.Invoke(processor, new object[] { new string[0], new Dictionary<string, string>() });
+      var paramCount = emptyEntity.GetPropertiesCount();
+
+      var readerWriter = GetReaderWriter(logger, filePath, sheetName, extraParameters);
+
+      // Пропускаем 1 строку с заголовками.
+      var listImportItems = readerWriter.Read().Skip(1).ToList();
+			var listResult = ImportEntities(logger, processor, getEntity, listImportItems, extraParameters);
+			readerWriter.Write(listResult, paramCount);
+    }
+
+    public static List<List<Structures.ExceptionsStruct>> ImportEntities(Logger logger,
+      object processor,
+      MethodInfo getEntity,
+      List<string[]> listImportItems,
+      Dictionary<string, string> extraParameters)
+    {
+      logger.Info("======================Импорт сущностей=====================");
+      var listResult = new List<List<Structures.ExceptionsStruct>>();
+      var searchDoubles = extraParameters.ContainsKey(Constants.ExtraParameters.IgnoreDuplicates) ? extraParameters[Constants.ExtraParameters.IgnoreDuplicates] : string.Empty;
+      var parametersListCount = listImportItems.Count;
+      var watch = Stopwatch.StartNew();
       uint row = 2;
       uint rowImported = 1;
-      var excelProcessor = new ExcelProcessor(xlsxPath, sheetName, logger);
-      var importData = excelProcessor.GetDataFromExcel();
-      var parametersListCount = importData.Count() - 1;
-      var importItemCount = importData.First().Count();
-      var exceptionList = new List<Structures.ExceptionsStruct>();
-      var arrayItems = new ArrayList();
-      var listImportItems = new List<string[]>();
-      int paramCount = 0;
-      var listResult = new List<List<Structures.ExceptionsStruct>>();
-      logger.Info("===================Чтение строк из файла===================");
-      var watch = System.Diagnostics.Stopwatch.StartNew();
-      // Пропускаем 1 строку, т.к. в ней заголовки таблицы.
-      foreach (var importItem in importData.Skip(1))
-      {
-        int countItem = importItem.Count();
-        foreach (var data in importItem.Take(countItem - 3))
-          arrayItems.Add(data);
-
-        listImportItems.Add((string[])arrayItems.ToArray(typeof(string)));
-        var percent = (double)(row - 1) / (double)parametersListCount * 100.00;
-        logger.Info($"\rОбработано {row - 1} строк из {parametersListCount} ({percent:F2}%)");
-        arrayItems.Clear();
-        row++;
-      }
-      watch.Stop();
-      var elapsedMs = watch.ElapsedMilliseconds;
-      logger.Info($"Времени затрачено на чтение строк из файла: {elapsedMs} мс");
-      logger.Info("======================Импорт сущностей=====================");
-      row = 2;
-
       foreach (var importItem in listImportItems)
       {
-        supplementEntity = false;
         var entity = (Entity)getEntity.Invoke(processor, new object[] { importItem.ToArray(), extraParameters });
-
-        if (!supplementEntityList.Contains(importItem[2]))
-          supplementEntityList.Add(importItem[2]);
-
-        if (supplementEntityList.Contains(importItem[0]))
-          supplementEntity = true;
-
+        var exceptionList = new List<Structures.ExceptionsStruct>();
+        var importItemCount = importItem.Length;
         if (entity != null)
         {
           if (importItemCount >= entity.GetPropertiesCount())
           {
             logger.Info($"Обработка сущности {row - 1}");
             watch.Restart();
-            exceptionList = entity.SaveToRX(logger, supplementEntity, searchDoubles).ToList();
+            exceptionList = entity.SaveToRX(logger, searchDoubles).ToList();
             watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            var elapsedMs = watch.ElapsedMilliseconds;
             if (exceptionList.Any(x => x.ErrorType == Constants.ErrorTypes.Error))
             {
               logger.Info($"Сущность {row - 1} не импортирована");
@@ -98,71 +88,30 @@ namespace ImportData
           }
           listResult.Add(exceptionList);
         }
-        if (paramCount == 0)
-          paramCount = entity.GetPropertiesCount();
       }
       var percent1 = (double)(rowImported - 1) / (double)parametersListCount * 100.00;
       logger.Info($"\rИмпортировано {rowImported - 1} сущностей из {parametersListCount} ({percent1:F2}%)");
 
-      logger.Info("=============Запись результатов импорта в файл=============");
-      watch.Restart();
-      row = 2;
-
-      var listArrayParams = new List<ArrayList>();
-      string[] text = new string[] { "Итог", "Дата", "Подробности" };
-      for (int i = 1; i <= 3; i++)
-      {
-        var title = excelProcessor.GetExcelColumnName(paramCount + i);
-        var arrayParams = new ArrayList { text[i - 1], title, 1 };
-        listArrayParams.Add(arrayParams);
-      }
-
-      foreach (var result in listResult)
-      {
-        if (result.Where(x => x.ErrorType == Constants.ErrorTypes.Error).Any())
-        {
-          // TODO: Добавить локализацию строки.
-          var message = string.Join("; ", result.Where(x => x.ErrorType == Constants.ErrorTypes.Error).Select(x => x.Message).ToArray());
-          text = null;
-          text = new string[] { "Не загружен", DateTime.Now.ToString("d"), message };
-          for (int i = 1; i <= 3; i++)
-          {
-            var title = excelProcessor.GetExcelColumnName(paramCount + i);
-            var arrayParams = new ArrayList { text[i - 1], title, row };
-            listArrayParams.Add(arrayParams);
-          }
-        }
-        else if (result.Where(x => x.ErrorType == Constants.ErrorTypes.Warn).Any())
-        {
-          // TODO: Добавить локализацию строки.
-          var message = string.Join(Environment.NewLine, result.Where(x => x.ErrorType == Constants.ErrorTypes.Warn).Select(x => x.Message).ToArray());
-          text = null;
-          text = new string[] { "Загружен частично", DateTime.Now.ToString("d"), message };
-          for (int i = 1; i <= 3; i++)
-          {
-            var title = excelProcessor.GetExcelColumnName(paramCount + i);
-            var arrayParams = new ArrayList { text[i - 1], title, row };
-            listArrayParams.Add(arrayParams);
-          }
-        }
-        else
-        {
-          // TODO: Добавить локализацию строки.
-          text = null;
-          text = new string[] { "Загружен", DateTime.Now.ToString("d"), string.Empty };
-          for (int i = 1; i <= 3; i++)
-          {
-            var title = excelProcessor.GetExcelColumnName(paramCount + i);
-            var arrayParams = new ArrayList { text[i - 1], title, row };
-            listArrayParams.Add(arrayParams);
-          }
-        }
-        row++;
-      }
-      excelProcessor.InsertText(listArrayParams, parametersListCount);
-      watch.Stop();
-      elapsedMs = watch.ElapsedMilliseconds;
-      logger.Info($"Времени затрачено на запись результатов в файл: {elapsedMs} мс");
+      return listResult;
     }
+
+    private static IFileReaderWriter GetReaderWriter(Logger logger, string filePath, string sheetName, Dictionary<string, string> extraParameters)
+    {
+      var availableFormats = new List<string>() { "xlsx", "csv" };
+			if (extraParameters.TryGetValue(Constants.ExtraParameters.InputFormat, out var inputFormat))
+			{
+				if (!availableFormats.Contains(inputFormat.ToLower()))
+					throw new ArgumentException($"Нет обработчика для формата {inputFormat}");
+			}
+
+      if (!extraParameters.TryGetValue(Constants.ExtraParameters.CsvDelimiter, out var delimiter))
+        delimiter = ";";
+
+			return inputFormat?.ToLower() switch
+			{
+				"csv" => new CsvReaderWriter(logger, filePath, delimiter),
+				_ => new ExcelReaderWriter(logger, filePath, sheetName),
+			};
+		}
   }
 }

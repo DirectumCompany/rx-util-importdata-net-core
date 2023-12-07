@@ -36,7 +36,7 @@ namespace Tests
         public static IEnumerable<List<string>> XlsxParse(string xlsxPath, string sheetName)
         {
             var logger = TestSettings.Logger;
-            var excelProcessor = new ExcelProcessor(xlsxPath, sheetName, logger);
+            var excelProcessor = new ImportData.Logic.ReaderWriter.ExcelProcessor(xlsxPath, sheetName, logger);
             var items = excelProcessor.GetDataFromExcel();
             return items.Skip(1);
         }
