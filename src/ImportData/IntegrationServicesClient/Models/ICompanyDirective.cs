@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ImportData.IntegrationServicesClient.Models
 {
-  class ICompanyDirective : IInternalDocumentBases
+  public class ICompanyDirective : IInternalDocumentBases
   {
     
   }

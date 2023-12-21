@@ -1,10 +1,8 @@
 ﻿namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Виды документов")]
-    public class IDocumentKinds
+    public class IDocumentKinds : IEntity
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
         public string Note { get; set; }
         public int DeadlineInDays { get; set; }
         public string ShortName { get; set; }
@@ -19,10 +17,5 @@
         public string NumberingType { get; set; }
         public string Status { get; set; }
         public IDocumentType DocumentType { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

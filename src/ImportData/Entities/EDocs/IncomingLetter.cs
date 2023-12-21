@@ -124,13 +124,16 @@ namespace ImportData
         logger.Warn(message);
       }
 
-      variableForParameters = this.Parameters[shift + 12].Trim();
-      int idDocumentRegisters = int.Parse(variableForParameters);
-      var documentRegisters = BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == idDocumentRegisters, exceptionList, logger);
+			var documentRegisterIdStr = this.Parameters[shift + 12].Trim();
+			if (!int.TryParse(documentRegisterIdStr, out var documentRegisterId))
+				if (ExtraParameters.ContainsKey("doc_register_id"))
+					int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId);
 
-      if (documentRegisters == null)
+			var documentRegisters = documentRegisterId != 0 ? BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == documentRegisterId, exceptionList, logger) : null;
+
+			if (documentRegisters == null)
       {
-        var message = string.Format("Не найден Журнал регистрации по ИД: \"{3}\". Входящее письмо: \"{0} {1} {2}\". ", regNumber, regDate.ToString(), counterparty, this.Parameters[shift + 12].Trim());
+        var message = string.Format("Не найден журнал регистрации по ИД \"{0}\"", documentRegisterIdStr);
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
         logger.Error(message);
 
@@ -143,12 +146,17 @@ namespace ImportData
 
       try
       {
-        var regDateBeginningOfDay = BeginningOfDay(regDate.UtcDateTime);
-        var incomingLetter = BusinessLogic.GetEntityWithFilter<IIncomingLetters>(x => x.RegistrationNumber == regNumber &&
-            x.RegistrationDate == regDateBeginningOfDay &&
-            x.DocumentRegister == documentRegisters, exceptionList, logger);
+        var isNewIncomingLetter = false;
+        var incomingLetters = BusinessLogic.GetEntitiesWithFilter<IIncomingLetters>(x => x.RegistrationNumber == regNumber &&
+			x.RegistrationDate.Value.ToString("d") == regDate.ToString("d") &&
+			x.DocumentRegister.Id == documentRegisters.Id, exceptionList, logger, true);
+
+        var incomingLetter = (IIncomingLetters)IOfficialDocuments.GetDocumentByRegistrationDate(incomingLetters, regDate, logger, exceptionList);
         if (incomingLetter == null)
+        {
           incomingLetter = new IIncomingLetters();
+          isNewIncomingLetter = true;
+        }
 
         incomingLetter.Name = fileNameWithoutExtension;
         incomingLetter.Created = DateTimeOffset.UtcNow;
@@ -161,38 +169,44 @@ namespace ImportData
         if (department != null)
           incomingLetter.BusinessUnit = department.BusinessUnit;
 
-        incomingLetter.Dated = dated != DateTimeOffset.MinValue ? dated : Constants.defaultDateTime;
+				if (dated != DateTimeOffset.MinValue)
+					incomingLetter.Dated = dated;
+				else
+					incomingLetter.Dated = null;
+
         incomingLetter.InNumber = inNumber;
         incomingLetter.Addressee = addressee;
         incomingLetter.DeliveryMethod = deliveryMethod;
         incomingLetter.Note = note;
 
         incomingLetter.DocumentRegister = documentRegisters;
-        incomingLetter.RegistrationDate = regDate != DateTimeOffset.MinValue ? regDate.UtcDateTime : Constants.defaultDateTime;
+
+				if (dated != DateTimeOffset.MinValue)
+					incomingLetter.RegistrationDate = regDate.UtcDateTime;
+				else
+					incomingLetter.RegistrationDate = null;
         incomingLetter.RegistrationNumber = regNumber;
         if (!string.IsNullOrEmpty(incomingLetter.RegistrationNumber) && incomingLetter.DocumentRegister != null)
           incomingLetter.RegistrationState = BusinessLogic.GetRegistrationsState(regState);
 
-        var createdIncomingLetter = BusinessLogic.CreateEntity<IIncomingLetters>(incomingLetter, exceptionList, logger);
+        IIncomingLetters createdIncomingLetter;
+        if (isNewIncomingLetter)
+        {
+          createdIncomingLetter = BusinessLogic.CreateEntity(incomingLetter, exceptionList, logger);
+        }
+        else
+        {
+          // Карточку не обновляем, там ошибка, если у документа есть версия.
+          createdIncomingLetter = incomingLetter;//BusinessLogic.UpdateEntity(contract, exceptionList, logger);
+        }
 
+        if (createdIncomingLetter == null)
+          return exceptionList;
+
+        var update_body = ExtraParameters.ContainsKey("update_body") && ExtraParameters["update_body"] == "true";
         if (!string.IsNullOrWhiteSpace(filePath))
-          exceptionList.AddRange(BusinessLogic.ImportBody(createdIncomingLetter, filePath, logger));
-
-        var documentRegisterId = 0;
-
-        if (ExtraParameters.ContainsKey("doc_register_id"))
-          if (int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId))
-            exceptionList.AddRange(BusinessLogic.RegisterDocument(incomingLetter, documentRegisterId, regNumber, regDate, Constants.RolesGuides.RoleIncomingDocumentsResponsible, logger));
-          else
-          {
-            var message = string.Format("Не удалось обработать параметр \"doc_register_id\". Полученное значение: {0}.", ExtraParameters["doc_register_id"]);
-            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-            logger.Error(message);
-
-            return exceptionList;
-          }
+          exceptionList.AddRange(BusinessLogic.ImportBody(createdIncomingLetter, filePath, logger, update_body));
       }
-
       catch (Exception ex)
       {
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = ex.Message });

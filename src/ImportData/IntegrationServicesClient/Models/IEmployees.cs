@@ -10,8 +10,5 @@
         public bool? NeedNotifyNewAssignments { get; set; }
         public bool? NeedNotifyAssignmentsSummary { get; set; }
         public string PersonnelNumber { get; set; }
-        public IPersons Person { get; set; }
-        public IDepartments Department { get; set; }
-        public IJobTitles JobTitle { get; set; }
     }
 }

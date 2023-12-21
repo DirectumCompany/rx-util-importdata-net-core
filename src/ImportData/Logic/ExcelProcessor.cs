@@ -12,8 +12,8 @@ namespace ImportData
 {
   public class ExcelProcessor
   {
-    public static string DocPath { get; set; }
-    public static string WorksheetName { get; set; }
+    public string DocPath { get; set; }
+    public string WorksheetName { get; set; }
     private static Logger logger;
 
     /// <summary>

@@ -4,12 +4,15 @@ using System.Globalization;
 using NLog;
 using ImportData.IntegrationServicesClient.Models;
 using System.IO;
+using System.Diagnostics.Contracts;
+using ImportData.Entities.Databooks;
+using System.Linq;
 
 namespace ImportData
 {
   class SupAgreement : Entity
   {
-    public int PropertiesCount = 20;
+    public int PropertiesCount = 22;
     /// <summary>
     /// Получить наименование число запрашиваемых параметров.
     /// </summary>
@@ -161,7 +164,7 @@ namespace ImportData
       }
 
       variableForParameters = this.Parameters[shift + 13].Trim();
-      var currency = BusinessLogic.GetEntityWithFilter<ICurrency>(c => c.Name == variableForParameters, exceptionList, logger);
+      var currency = BusinessLogic.GetEntityWithFilter<ICurrencies>(c => c.Name == variableForParameters, exceptionList, logger);
 
       if (!string.IsNullOrEmpty(this.Parameters[shift + 13].Trim()) && currency == null)
       {
@@ -204,41 +207,73 @@ namespace ImportData
 
       var note = this.Parameters[shift + 17];
 
-      variableForParameters = this.Parameters[shift + 18].Trim();
-      int idDocumentRegisters = int.Parse(variableForParameters);
-      var documentRegisters = BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == idDocumentRegisters, exceptionList, logger);
+      var documentRegisterIdStr = this.Parameters[shift + 18].Trim();
+      if (!int.TryParse(documentRegisterIdStr, out var documentRegisterId))
+        if (ExtraParameters.ContainsKey("doc_register_id"))
+          int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId);
+
+      var documentRegisters = documentRegisterId != 0 ? BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == documentRegisterId, exceptionList, logger) : null;
 
       if (documentRegisters == null)
       {
-        var message = string.Format("Не найден Журнал регистрации по ИД: \"{3}\". Договор: \"{0} {1} {2}\". ", regNumber, regDate.ToString(), counterparty, this.Parameters[shift + 18].Trim());
+        var message = string.Format("Не найден журнал регистрации по ИД \"{0}\"", documentRegisterIdStr);
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
         logger.Error(message);
 
         return exceptionList;
       }
 
-      var leadingDocument = BusinessLogic.GetEntityWithFilter<IContracts>(d => d.RegistrationNumber == regNumberLeadingDocument && d.RegistrationDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'") == regDateLeadingDocument.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'"), exceptionList, logger);
+			var leadDocResearchResult = IOfficialDocuments.GetLeadingDocument(logger, regNumberLeadingDocument, regDateLeadingDocument, counterparty.Id);
+			var leadingDocument = leadDocResearchResult.leadingDocument;
+			if (!string.IsNullOrEmpty(leadDocResearchResult.errorMessage))
+			{
+				var message = leadDocResearchResult.errorMessage;
+				exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+				logger.Error(message);
 
-      if (leadingDocument == null)
+				return exceptionList;
+			}
+
+			var regState = this.Parameters[shift + 19].Trim();
+
+      var caseFileStr = this.Parameters[shift + 20].Trim();
+      var caseFile = BusinessLogic.GetEntityWithFilter<ICaseFiles>(x => x.Name == caseFileStr, exceptionList, logger);
+      if (!string.IsNullOrEmpty(caseFileStr) && caseFile == null)
       {
-        var message = string.Format("Доп.соглашение не может быть импортировано. Не найден ведущий документ с реквизитами \"Дата документа\" {0}, \"Рег. №\" {1} и \"Контрагент\" {2}.", regDateLeadingDocument.ToString("d"), regNumberLeadingDocument, counterparty.Name);
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        var message = string.Format("Не найдено Дело по наименованию \"{0}\"", caseFileStr);
+        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
         logger.Error(message);
-
-        return exceptionList;
       }
 
-      var regState = this.Parameters[shift + 19].Trim();
+      var placedToCaseFileDateStr = this.Parameters[shift + 21].Trim();
+      DateTimeOffset placedToCaseFileDate = DateTimeOffset.MinValue;
+      try
+      {
+        if (caseFile != null)
+          placedToCaseFileDate = ParseDate(placedToCaseFileDateStr, style, culture);
+      }
+      catch (Exception)
+      {
+        var message = string.Format("Не удалось обработать значение поля \"Дата помещения\" \"{0}\".", placedToCaseFileDateStr);
+        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
+        logger.Error(message);
+      }
 
       try
       {
+        var isNewSupAgreement = false;
         var regDateBeginningOfDay = BeginningOfDay(regDate.UtcDateTime);
-        var supAgreement = BusinessLogic.GetEntityWithFilter<ISupAgreements>(x => x.RegistrationNumber == regNumber &&
-            x.RegistrationDate == regDateBeginningOfDay &&
-            x.Counterparty.Id == counterparty.Id &&
-            x.DocumentRegister == documentRegisters, exceptionList, logger);
+        var supAgreements = BusinessLogic.GetEntitiesWithFilter<ISupAgreements>(x => x.RegistrationNumber == regNumber &&
+			x.RegistrationDate.Value.ToString("d") == regDate.ToString("d") &&
+			x.Counterparty.Id == counterparty.Id &&
+            x.DocumentRegister.Id == documentRegisters.Id, exceptionList, logger, true);
+
+        var supAgreement = (ISupAgreements)IOfficialDocuments.GetDocumentByRegistrationDate(supAgreements, regDate, logger, exceptionList);
         if (supAgreement == null)
+        {
           supAgreement = new ISupAgreements();
+          isNewSupAgreement = true;
+        }
 
         supAgreement.Name = fileNameWithoutExtension;
         supAgreement.Created = DateTimeOffset.UtcNow;
@@ -248,8 +283,15 @@ namespace ImportData
         supAgreement.Subject = subject;
         supAgreement.BusinessUnit = businessUnit;
         supAgreement.Department = department;
-        supAgreement.ValidFrom = validFrom != DateTimeOffset.MinValue ? validFrom : Constants.defaultDateTime;
-        supAgreement.ValidTill = validTill != DateTimeOffset.MinValue ? validTill : Constants.defaultDateTime;
+
+        if (validFrom != DateTimeOffset.MinValue)
+          supAgreement.ValidFrom = validFrom;
+        else
+          supAgreement.ValidFrom = null;
+        if (validTill != DateTimeOffset.MinValue)
+          supAgreement.ValidTill = validTill;
+        else
+          supAgreement.ValidTill = null;
         supAgreement.TotalAmount = totalAmount;
         supAgreement.Currency = currency;
         supAgreement.LifeCycleState = lifeCycleState;
@@ -259,28 +301,39 @@ namespace ImportData
 
         supAgreement.DocumentRegister = documentRegisters;
         supAgreement.RegistrationNumber = regNumber;
-        supAgreement.RegistrationDate = regDate != DateTimeOffset.MinValue ? regDate.UtcDateTime : Constants.defaultDateTime;
+        if (regDate != DateTimeOffset.MinValue)
+          supAgreement.RegistrationDate = regDate.UtcDateTime;
+        else
+          supAgreement.RegistrationDate = null;
+
         if (!string.IsNullOrEmpty(supAgreement.RegistrationNumber) && supAgreement.DocumentRegister != null)
           supAgreement.RegistrationState = BusinessLogic.GetRegistrationsState(regState);
 
-        var createdSupAgreement = BusinessLogic.CreateEntity<ISupAgreements>(supAgreement, exceptionList, logger);
+        supAgreement.CaseFile = caseFile;
+        if (placedToCaseFileDate != DateTimeOffset.MinValue)
+          supAgreement.PlacedToCaseFileDate = placedToCaseFileDate;
+        else
+          supAgreement.PlacedToCaseFileDate = null;
 
+        ISupAgreements createdSupAgreement;
+        if (isNewSupAgreement)
+        {
+          createdSupAgreement = BusinessLogic.CreateEntity(supAgreement, exceptionList, logger);
+          // Дополнительно обновляем свойство Состояние, так как после установки регистрационного номера Состояние сбрасывается в значение "В разработке"
+          createdSupAgreement?.UpdateLifeCycleState(lifeCycleState);
+        }
+        else
+        {
+          // Карточку не обновляем, там ошибка, если у документа есть версия.
+          createdSupAgreement = supAgreement;//BusinessLogic.UpdateEntity(contract, exceptionList, logger);
+        }
+
+        if (createdSupAgreement == null)
+          return exceptionList;
+
+        var update_body = ExtraParameters.ContainsKey("update_body") && ExtraParameters["update_body"] == "true";
         if (!string.IsNullOrWhiteSpace(filePath))
-          exceptionList.AddRange(BusinessLogic.ImportBody(createdSupAgreement, filePath, logger));
-
-        var documentRegisterId = 0;
-
-        if (ExtraParameters.ContainsKey("doc_register_id"))
-          if (int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId))
-            exceptionList.AddRange(BusinessLogic.RegisterDocument(supAgreement, documentRegisterId, regNumber, regDate, Constants.RolesGuides.RoleContractResponsible, logger));
-          else
-          {
-            var message = string.Format("Не удалось обработать параметр \"doc_register_id\". Полученное значение: {0}.", ExtraParameters["doc_register_id"]);
-            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-            logger.Error(message);
-
-            return exceptionList;
-          }
+          exceptionList.AddRange(BusinessLogic.ImportBody(createdSupAgreement, filePath, logger, update_body));
       }
       catch (Exception ex)
       {

@@ -6,10 +6,11 @@ using NDesk.Options;
 using NLog;
 using ImportData.Entities.Databooks;
 using ImportData.IntegrationServicesClient.Exceptions;
+using ImportData.IntegrationServicesClient.Models;
 
 namespace ImportData
 {
-  class Program
+  public class Program
   {
     public static Logger logger = LogManager.GetCurrentClassLogger();
     private const string DefaultConfigSettingsName = @"_ConfigSettings.xml";
@@ -82,13 +83,23 @@ namespace ImportData
         case "importcompanydirectives":
           EntityProcessor.Process(typeof(CompanyDirective), xlsxPath, Constants.SheetNames.CompanyDirectives, extraParameters, ignoreDuplicates, logger);
           break;
-        default:
+        case "importcasefiles":
+          EntityProcessor.Process(typeof(CaseFile), xlsxPath, Constants.SheetNames.CaseFiles, extraParameters, ignoreDuplicates, logger);
+          break;
+		case "importсountries":
+		  EntityProcessor.Process(typeof(Country), xlsxPath, Constants.SheetNames.Countries, extraParameters, ignoreDuplicates, logger);
+		  break;
+        case "importcurrencies":
+		  EntityProcessor.Process(typeof(Currency), xlsxPath, Constants.SheetNames.Currencies, extraParameters, ignoreDuplicates, logger);
+		  break;
+		default:
           break;
       }
     }
 
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
+      //args = new[] { "-n", "Administrator", "-p", "11111", "-a", "importaddendums", "-ub", "true", "-f", $@"Приложения.xlsx" };
       logger.Info("=========================== Process Start ===========================");
       var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -110,8 +121,9 @@ namespace ImportData
                 { "f|file=",  "Файл с исходными данными.", v => xlsxPath = v },
                 { "dr|doc_register_id=",  "Журнал регистрации.", v => extraParameters.Add("doc_register_id", v)},
                 { "d|search_doubles=", "Признак поиска дублей сущностей.", d => ignoreDuplicates = d},
+                { "ub|update_body=", "Признак обновления последней версии документа.", t => extraParameters.Add("update_body", t) },
                 { "h|help", "Show this help", v => isHelp = (v != null) },
-              };
+      };
 
       try
       {

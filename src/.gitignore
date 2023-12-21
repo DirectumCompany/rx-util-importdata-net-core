@@ -94,3 +94,7 @@ ENV/
 /ImportData/obj/Debug/*
 /.vs/ImportData/*
 /ImportData/obj/*
+
+/Tests/bin/Debug/*
+/Tests/obj/Debug/*
+/Tests/obj/*

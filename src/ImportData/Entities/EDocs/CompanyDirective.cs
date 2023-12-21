@@ -130,13 +130,16 @@ namespace ImportData
 
       var note = this.Parameters[shift + 11];
 
-      variableForParameters = this.Parameters[shift + 12].Trim();
-      int idDocumentRegisters = int.Parse(variableForParameters);
-      var documentRegisters = BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == idDocumentRegisters, exceptionList, logger);
+			var documentRegisterIdStr = this.Parameters[shift + 12].Trim();
+			if (!int.TryParse(documentRegisterIdStr, out var documentRegisterId))
+				if (ExtraParameters.ContainsKey("doc_register_id"))
+					int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId);
 
-      if (documentRegisters == null)
+			var documentRegisters = documentRegisterId != 0 ? BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == documentRegisterId, exceptionList, logger) : null;
+
+			if (documentRegisters == null)
       {
-        var message = string.Format("Приложение не может быть импортировано. Не найден журнал регистрации по ИД \"{0}\" ", this.Parameters[shift + 12].Trim());
+        var message = string.Format("Не найден журнал регистрации по ИД \"{0}\"", documentRegisterIdStr);
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
         logger.Error(message);
 
@@ -147,12 +150,17 @@ namespace ImportData
 
       try
       {
-        var regDateBeginningOfDay = BeginningOfDay(regDate.UtcDateTime);
-        var companyDirective = BusinessLogic.GetEntityWithFilter<ICompanyDirective>(x => x.RegistrationNumber == regNumber && 
-            x.RegistrationDate == regDateBeginningOfDay &&
-            x.DocumentRegister == documentRegisters, exceptionList, logger);
+        var isNewCompanyDirective = false;
+        var companyDirectives = BusinessLogic.GetEntitiesWithFilter<ICompanyDirective>(x => x.RegistrationNumber == regNumber && 
+            x.RegistrationDate.Value.ToString("d") == regDate.ToString("d") &&
+            x.DocumentRegister.Id == documentRegisters.Id, exceptionList, logger, true);
+
+        var companyDirective = (ICompanyDirective)IOfficialDocuments.GetDocumentByRegistrationDate(companyDirectives, regDate, logger, exceptionList);
         if (companyDirective == null)
+        {
           companyDirective = new ICompanyDirective();
+          isNewCompanyDirective = true;
+        }
 
         companyDirective.Name = fileNameWithoutExtension;
         companyDirective.Created = DateTimeOffset.UtcNow;
@@ -168,33 +176,35 @@ namespace ImportData
         companyDirective.Note = note;
 
         companyDirective.DocumentRegister = documentRegisters;
-        companyDirective.RegistrationDate = regDate != DateTimeOffset.MinValue ? regDate.UtcDateTime : Constants.defaultDateTime;
-        companyDirective.RegistrationNumber = regNumber;
+
+        if (regDate != DateTimeOffset.MinValue)
+          companyDirective.RegistrationDate = regDate.UtcDateTime;
+        else
+          companyDirective.RegistrationDate = null;
+
+				companyDirective.RegistrationNumber = regNumber;
         if (!string.IsNullOrEmpty(companyDirective.RegistrationNumber) && companyDirective.DocumentRegister != null)
           companyDirective.RegistrationState = BusinessLogic.GetRegistrationsState(regState);
 
-        var createdcompanyDirective = BusinessLogic.CreateEntity<ICompanyDirective>(companyDirective, exceptionList, logger);
+        ICompanyDirective createdCompanyDirective;
+        if (isNewCompanyDirective)
+        {
+          createdCompanyDirective = BusinessLogic.CreateEntity(companyDirective, exceptionList, logger);
+					// Дополнительно обновляем свойство Состояние, так как после установки регистрационного номера Состояние сбрасывается в значение "В разработке"
+					createdCompanyDirective?.UpdateLifeCycleState(lifeCycleState);
+				}
+        else
+        {
+          // Карточку не обновляем, там ошибка, если у документа есть версия.
+          createdCompanyDirective = companyDirective;//BusinessLogic.UpdateEntity(contract, exceptionList, logger);
+        }
 
+        if (createdCompanyDirective == null)
+          return exceptionList;
+
+        var update_body = ExtraParameters.ContainsKey("update_body") && ExtraParameters["update_body"] == "true";
         if (!string.IsNullOrWhiteSpace(filePath))
-          exceptionList.AddRange(BusinessLogic.ImportBody(createdcompanyDirective, filePath, logger));
-
-        var documentRegisterId = 0;
-
-        if (ExtraParameters.ContainsKey("doc_register_id"))
-          if (int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId))
-            exceptionList.AddRange(BusinessLogic.RegisterDocument(companyDirective, documentRegisterId, regNumber, regDate, Constants.RolesGuides.RoleIncomingDocumentsResponsible, logger));
-          else
-          {
-            var message = string.Format("Не удалось обработать параметр \"doc_register_id\". Полученное значение: {0}.", ExtraParameters["doc_register_id"]);
-            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-            logger.Error(message);
-
-            return exceptionList;
-          }
-        
-        // Дополнительно обновляем свойство Состояние, так как после установки регистрационного номера Состояние сбрасывается в значение "В разработке"
-        if (!string.IsNullOrEmpty(lifeCycleState))
-          createdcompanyDirective = createdcompanyDirective.UpdateLifeCycleState(createdcompanyDirective, lifeCycleState);
+          exceptionList.AddRange(BusinessLogic.ImportBody(createdCompanyDirective, filePath, logger, update_body));
       }
       catch (Exception ex)
       {

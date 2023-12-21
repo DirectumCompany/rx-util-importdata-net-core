@@ -1,9 +1,8 @@
 ﻿namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Контрагент")]
-    public class ICounterparties
+    public class ICounterparties : IEntity
     {
-        public string Name { get; set; }
         public string TIN { get; set; }
         public string LegalAddress { get; set; }
         public string PostalAddress { get; set; }
@@ -19,15 +18,9 @@
         public string CanExchange { get; set; }
         public string Code { get; set; }
         public string Status { get; set; }
-        public int Id { get; set; }
         public ICities City { get; set; }
         public IRegions Region { get; set; }
         public IBanks Bank { get; set; }
         public IEmployees Responsible { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

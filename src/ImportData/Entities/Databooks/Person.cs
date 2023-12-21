@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using NLog;
 using ImportData.IntegrationServicesClient.Models;
+using System.Linq.Expressions;
 
 namespace ImportData
 {
@@ -117,7 +118,9 @@ namespace ImportData
                 var isNewPerson = false;
 
                 if (ignoreDuplicates.ToLower() != Constants.ignoreDuplicates.ToLower())
-                    person = BusinessLogic.GetEntityWithFilter<IPersons>(x => x.LastName == lastName && x.FirstName == firstName, exceptionList, logger);
+                {
+                    person = BusinessLogic.GetEntityWithFilter<IPersons>(x => x.LastName == lastName && x.FirstName == firstName && x.MiddleName == middleName, exceptionList, logger);
+                }
 
                 if (person is null)
                 {

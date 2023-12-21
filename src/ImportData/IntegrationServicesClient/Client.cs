@@ -85,18 +85,9 @@ namespace ImportData.IntegrationServicesClient
     /// <returns>Созданна сущность.</returns>
     public static T CreateEntity<T>(T entity, Logger logger) where T : class
     {
-      try
-      {
-          var data = client.For<T>().Set(entity).InsertEntryAsync().Result;
+      var data = client.For<T>().Set(entity).InsertEntryAsync().Result;
 
-          return data;
-      }
-      catch (Exception ex)
-      {
-          logger.Error(ex.Message);
-      }
-
-      return null;
+      return data;
     }
 
     /// <summary>

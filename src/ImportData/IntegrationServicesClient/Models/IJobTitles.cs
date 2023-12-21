@@ -1,15 +1,8 @@
 ﻿namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Должность")]
-    public  class IJobTitles
+    public  class IJobTitles : IEntity
     {
-        public string Name { get; set; }
         public string Status { get; set; }
-        public int Id { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

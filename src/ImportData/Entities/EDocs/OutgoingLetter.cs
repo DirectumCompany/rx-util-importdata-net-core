@@ -110,13 +110,16 @@ namespace ImportData
         logger.Warn(message);
       }
 
-      variableForParameters = this.Parameters[shift + 10].Trim();
-      int idDocumentRegisters = int.Parse(variableForParameters);
-      var documentRegisters = BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == idDocumentRegisters, exceptionList, logger);
+			var documentRegisterIdStr = this.Parameters[shift + 10].Trim();
+			if (!int.TryParse(documentRegisterIdStr, out var documentRegisterId))
+				if (ExtraParameters.ContainsKey("doc_register_id"))
+					int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId);
 
-      if (documentRegisters == null)
+			var documentRegisters = documentRegisterId != 0 ? BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(r => r.Id == documentRegisterId, exceptionList, logger) : null;
+
+			if (documentRegisters == null)
       {
-        var message = string.Format("Не найден Журнал регистрации по ИД: \"{3}\". Входящее письмо: \"{0} {1} {2}\". ", regNumber, regDate.ToString(), counterparty, this.Parameters[shift + 10].Trim());
+        var message = string.Format("Не найден журнал регистрации по ИД \"{0}\"", documentRegisterIdStr);
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
         logger.Error(message);
 
@@ -127,52 +130,51 @@ namespace ImportData
 
       try
       {
+        var isNewOutgoingLetter = false;
         var regDateBeginningOfDay = BeginningOfDay(regDate.UtcDateTime);
-        var outgoingLetter = BusinessLogic.GetEntityWithFilter<IOutgoingLetters>(x => x.RegistrationNumber == regNumber && 
-            x.RegistrationDate == regDateBeginningOfDay &&
-            x.DocumentRegister == documentRegisters, exceptionList, logger);
+        var outgoingLetters = BusinessLogic.GetEntitiesWithFilter<IOutgoingLetters>(x => x.RegistrationNumber == regNumber &&
+			x.RegistrationDate.Value.ToString("d") == regDate.ToString("d") &&
+			x.DocumentRegister.Id == documentRegisters.Id, exceptionList, logger, true);
+        
+        var outgoingLetter = (IOutgoingLetters)IOfficialDocuments.GetDocumentByRegistrationDate(outgoingLetters, regDate, logger, exceptionList);
         if (outgoingLetter == null)
-            outgoingLetter = new IOutgoingLetters();
+        {
+          outgoingLetter = new IOutgoingLetters();
+          isNewOutgoingLetter = true;
+        }
 
         outgoingLetter.Name = fileNameWithoutExtension;
         outgoingLetter.Correspondent = counterparty;
-
         outgoingLetter.Created = DateTimeOffset.UtcNow;
-
         outgoingLetter.DocumentKind = documentKind;
         outgoingLetter.Subject = subject;
         outgoingLetter.Department = department;
-
-        if (department != null)
-          outgoingLetter.BusinessUnit = department.BusinessUnit;
-
+        outgoingLetter.BusinessUnit = department?.BusinessUnit;
+        outgoingLetter.DeliveryMethod = deliveryMethod;
         outgoingLetter.PreparedBy = preparedBy;
         outgoingLetter.Note = note;
-
         outgoingLetter.DocumentRegister = documentRegisters;
         outgoingLetter.RegistrationNumber = regNumber;
-        outgoingLetter.RegistrationDate = regDate != DateTimeOffset.MinValue ? regDate.UtcDateTime : Constants.defaultDateTime;
+        if (regDate != DateTimeOffset.MinValue)
+          outgoingLetter.RegistrationDate = regDate.UtcDateTime;
+        else
+					outgoingLetter.RegistrationDate = null;
         if (!string.IsNullOrEmpty(outgoingLetter.RegistrationNumber) && outgoingLetter.DocumentRegister != null)
           outgoingLetter.RegistrationState = BusinessLogic.GetRegistrationsState(regState);
+				IOutgoingLetters createdOutgoingLetter;
+        if (isNewOutgoingLetter)
+        {
+          createdOutgoingLetter = BusinessLogic.CreateEntity(outgoingLetter, exceptionList, logger);
+        }
+        else
+        {
+          // Карточку не обновляем, там ошибка, если у документа есть версия.
+          createdOutgoingLetter = outgoingLetter;//BusinessLogic.UpdateEntity(contract, exceptionList, logger);
+        }
 
-        var createdOutgoingLetter = BusinessLogic.CreateEntity<IOutgoingLetters>(outgoingLetter, exceptionList, logger);
-
+        var update_body = ExtraParameters.ContainsKey("update_body") && ExtraParameters["update_body"] == "true";
         if (!string.IsNullOrWhiteSpace(filePath))
-          exceptionList.AddRange(BusinessLogic.ImportBody(createdOutgoingLetter, filePath, logger));
-
-        var documentRegisterId = 0;
-
-        if (ExtraParameters.ContainsKey("doc_register_id"))
-          if (int.TryParse(ExtraParameters["doc_register_id"], out documentRegisterId))
-            exceptionList.AddRange(BusinessLogic.RegisterDocument(outgoingLetter, documentRegisterId, regNumber, regDate, Constants.RolesGuides.RoleOutgoingDocumentsResponsible, logger));
-          else
-          {
-            var message = string.Format("Не удалось обработать параметр \"doc_register_id\". Полученное значение: {0}.", ExtraParameters["doc_register_id"]);
-            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-            logger.Error(message);
-
-            return exceptionList;
-          }
+          exceptionList.AddRange(BusinessLogic.ImportBody(createdOutgoingLetter, filePath, logger, update_body));
       }
       catch (Exception ex)
       {

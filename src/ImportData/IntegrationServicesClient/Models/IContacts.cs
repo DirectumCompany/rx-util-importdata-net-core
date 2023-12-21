@@ -5,9 +5,8 @@ using System.Text;
 namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Контакт")]
-    public class IContacts
+    public class IContacts : IEntity
     {
-        public string Name { get; set; }
         public string JobTitle { get; set; }
         public string Phone { get; set; }
         public string Fax { get; set; }
@@ -15,7 +14,6 @@ namespace ImportData.IntegrationServicesClient.Models
         public string Note { get; set; }
         public string Homepage { get; set; }
         public string Status { get; set; }
-        public int Id { get; set; }
         public ICompanies Company { get; set; }
         public IPersons Person { get; set; }
     }

@@ -1,7 +1,7 @@
 ﻿namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Приказ")]
-    class IOrders : IInternalDocumentBases
+    public class IOrders : IInternalDocumentBases
     {
     }
 }

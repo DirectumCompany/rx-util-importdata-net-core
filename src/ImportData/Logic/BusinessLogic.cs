@@ -9,19 +9,19 @@ using Simple.OData.Client;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using ImportData.IntegrationServicesClient.Exceptions;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Extensions.Logging;
 
 namespace ImportData
 {
   public class BusinessLogic
   {
-    public static IEnumerable<string> ErrorList;
-
     /// <summary>
     /// Чтение атрибута EntityName.
     /// </summary>
     /// <param name="t">Тип класса.</param>
     /// <returns>Значение атрибута EntityName.</returns>
-    private static string PrintInfo(Type t)
+    internal static string PrintInfo(Type t)
     {
       Attribute[] attrs = Attribute.GetCustomAttributes(t);
 
@@ -79,6 +79,13 @@ namespace ImportData
       }
       catch (Exception ex)
       {
+        if (ex.InnerException is WebRequestException webEx)
+        {
+          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+          logger.Error(message);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
+
         if (ex.Message.Contains("(Not Found)"))
           throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
 
@@ -89,12 +96,51 @@ namespace ImportData
       return null;
     }
 
-    /// <summary>
-    /// Получение сущностей.
-    /// </summary>
-    /// <typeparam name="T">Тип сущности.</typeparam>
-    /// <returns>Список сущностей.</returns>
-    public static IEnumerable<T> GetEntities<T>() where T : class
+		/// <summary>
+		/// Получение сущностей по фильтру.
+		/// </summary>
+		/// <typeparam name="T">Тип сущности.</typeparam>
+		/// <param name="expression">Условие фильтрации.</param>
+		/// <param name="exceptionList">Список ошибок.</param>
+		/// <param name="logger">Логгер</param>
+		/// <returns>Сущности.</returns>
+		public static IEnumerable<T> GetEntitiesWithFilter<T>(Expression<Func<T, bool>> expression, List<Structures.ExceptionsStruct> exceptionList, Logger logger, bool isExpand = false) where T : class
+		{
+			Expression<Func<T, bool>> condition = expression;
+			var filter = new ODataExpression(condition);
+
+			logger.Info(string.Format("Получение сущностей {0}", PrintInfo(typeof(T))));
+
+			try
+			{
+				var entities = Client.GetEntitiesByFilter<T>(filter, isExpand);
+
+				return entities ?? Enumerable.Empty<T>();
+			}
+			catch (Exception ex)
+			{
+				if (ex.InnerException is WebRequestException webEx)
+				{
+					var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+					logger.Error(message);
+					exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+				}
+
+				if (ex.Message.Contains("(Not Found)"))
+					throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
+
+				if (ex.Message.Contains("(Unauthorized)"))
+					throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
+			}
+			return Enumerable.Empty<T>();
+		}
+
+		/// <summary>
+		/// Получение сущностей.
+		/// </summary>
+		/// <typeparam name="T">Тип сущности.</typeparam>
+		/// <returns>Список сущностей.</returns>
+		public static IEnumerable<T> GetEntities<T>(List<Structures.ExceptionsStruct> exceptionList, Logger logger) where T : class
     {
       try
       {
@@ -103,6 +149,13 @@ namespace ImportData
       }
       catch (Exception ex)
       {
+        if (ex.InnerException is WebRequestException webEx)
+        {
+          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+          logger.Error(message);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
+
         if (ex.Message.Contains("(Not Found)"))
           throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
 
@@ -123,20 +176,33 @@ namespace ImportData
       logger.Info(string.Format("Создание сущности {0}", PrintInfo(typeof(T))));
       try
       {
-        var entities = Client.CreateEntity<T>(entity, logger);
+        var createdEntity = Client.CreateEntity<T>(entity, logger);
 
-        return entities;
+        if (createdEntity == null)
+        {
+          var message = $"Ошибка при создании сущности";
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
+
+        return createdEntity;
       }
       catch (Exception ex)
       {
+        if (ex.InnerException is WebRequestException webEx)
+        {
+          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+          logger.Error(message);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
+
         if (ex.Message.Contains("(Not Found)"))
           throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
 
         if (ex.Message.Contains("(Unauthorized)"))
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
-
-        throw;
       }
+
+      return null;
     }
 
     /// <summary>
@@ -157,6 +223,13 @@ namespace ImportData
       }
       catch (Exception ex)
       {
+        if (ex.InnerException is WebRequestException webEx)
+        {
+          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+          logger.Error(message);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
+
         if (ex.Message.Contains("(Not Found)"))
           throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
 
@@ -175,31 +248,33 @@ namespace ImportData
     /// <param name="pathToBody">Путь к телу документа.</param>
     /// <param name="logger">Логировщик.</param>
     /// <returns>Список ошибок.</returns>
-    public static IEnumerable<Structures.ExceptionsStruct> ImportBody(IElectronicDocuments edoc, string pathToBody, Logger logger)
+    public static IEnumerable<Structures.ExceptionsStruct> ImportBody(IElectronicDocuments edoc, string pathToBody, Logger logger, bool update_body = false)
     {
       var exceptionList = new List<Structures.ExceptionsStruct>();
       logger.Info("Импорт тела документа");
 
       try
       {
+        if (!File.Exists(pathToBody))
+        {
+          var message = string.Format("Не найден файл по заданому пути: \"{0}\"", pathToBody);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+          logger.Warn(message);
+
+          return exceptionList;
+        }
+
         // GetExtension возвращает расширение в формате ".<расширение>". Убираем точку.
         var extention = Path.GetExtension(pathToBody).Replace(".", "");
         var associatedApplication = BusinessLogic.GetEntityWithFilter<IAssociatedApplications>(a => a.Extension == extention, exceptionList, logger);
 
         if (associatedApplication != null)
         {
-          var createdVersion = edoc.CreateVersion(edoc.Name, associatedApplication);
           var lastVersion = edoc.LastVersion();
-          lastVersion.Body.Value = new byte[0];
+          if (lastVersion == null || !update_body || lastVersion.AssociatedApplication.Extension != extention)
+            lastVersion = edoc.CreateVersion(edoc.Name, associatedApplication);
 
-          if (!File.Exists(pathToBody))
-          {
-            var message = string.Format("Не найден файл по заданому пути: \"{0}\"", pathToBody);
-            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-            logger.Warn(message);
-
-            return exceptionList;
-          }
+          lastVersion.Body ??= new IBinaryData();
 
           lastVersion.Body.Value = File.ReadAllBytes(pathToBody);
           lastVersion.AssociatedApplication = associatedApplication;
@@ -291,7 +366,7 @@ namespace ImportData
 
         try
         {
-            return RegistrationState[key];
+            return RegistrationState[key.Trim()];
         }
         catch (KeyNotFoundException ex)
         {

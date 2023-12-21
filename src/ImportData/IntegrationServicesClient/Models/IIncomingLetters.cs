@@ -3,10 +3,16 @@
 namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Входящее письмо")]
-    class IIncomingLetters : IOfficialDocuments
+    public class IIncomingLetters : IOfficialDocuments
     {
-        public DateTimeOffset Dated { get; set; }
-        public string InNumber { get; set; }
+        private DateTimeOffset? dated;
+
+		public DateTimeOffset? Dated
+		{
+			get { return dated; }
+			set { dated = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+		}
+		public string InNumber { get; set; }
         public bool IsManyAddressees { get; set; }
         public string ManyAddresseesPlaceholder { get; set; }
         public string ManyAddresseesLabel { get; set; }

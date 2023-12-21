@@ -2,29 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Simple.OData.Client;
 
 namespace ImportData.IntegrationServicesClient.Models
 {
     [EntityName("Электронный документ")]
-    public class IElectronicDocuments
+    public class IElectronicDocuments : IEntity
     {
-        public string Name { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
-        public bool HasRelations { get; set; }
+        private DateTimeOffset? created;
+        private DateTimeOffset? modified;
+		public DateTimeOffset? Created
+		{
+			get { return created; }
+			set { created = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+		}
+		public DateTimeOffset? Modified
+		{
+			get { return modified; }
+			set { modified = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+		}
+		public bool HasRelations { get; set; }
         public int LastVersionSignatureType { get; set; }
         public bool LastVersionApproved { get; set; }
         public bool HasVersions { get; set; }
         public bool HasPublicBody { get; set; }
         public bool VersionsLocked { get; set; }
-        public int Id { get; set; }
         public IAssociatedApplications AssociatedApplication { get; set; }
         public IEnumerable<IElectronicDocumentVersionss> Versions { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
 
         public IElectronicDocumentVersionss LastVersion()
         {
@@ -34,13 +38,16 @@ namespace ImportData.IntegrationServicesClient.Models
             .FindEntriesAsync()
             .Result.FirstOrDefault().Versions.LastOrDefault();
 
+            if (lastVersions == null)
+              return null;
+
             var lastVersion = Client.Instance()
             .For<IElectronicDocuments>()
             .Key(Id)
             .NavigateTo(v => v.Versions)
             .Key(lastVersions.Id)
             //.Expand(v => v.ElectronicDocument)
-            .Expand(v => v.Body)
+            .Expand(ODataExpandOptions.ByValue())
             .FindEntriesAsync()
             .Result.LastOrDefault();
 

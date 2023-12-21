@@ -1,6 +1,7 @@
 ﻿namespace ImportData.IntegrationServicesClient.Models
 {
-    class IContractCategories : IDocumentGroupBases
+    [EntityName("Категория договора")]
+    public class IContractCategories : IDocumentGroupBases
     {
 
     }
