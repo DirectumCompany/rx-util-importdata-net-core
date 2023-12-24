@@ -158,7 +158,12 @@ namespace ImportData
                 var isNewBU = false;
 
                 if (ignoreDuplicates.ToLower() != Constants.ignoreDuplicates.ToLower())
-                    businessUnit = BusinessLogic.GetEntityWithFilter<IBusinessUnits>(x => x.Name == name && x.TIN == tin && x.TRRC == trrc && x.PSRN == psrn, exceptionList, logger);
+                {
+                    if (!string.IsNullOrEmpty(tin) && !string.IsNullOrEmpty(trrc) && !string.IsNullOrEmpty(psrn))
+                        businessUnit = BusinessLogic.GetEntityWithFilter<IBusinessUnits>(x => x.Name == name && x.TIN == tin && x.TRRC == trrc && x.PSRN == psrn, exceptionList, logger);
+                    else
+                        businessUnit = BusinessLogic.GetEntityWithFilter<IBusinessUnits>(x => x.Name == name, exceptionList, logger);
+                }
 
                 if (businessUnit is null)
                 {
