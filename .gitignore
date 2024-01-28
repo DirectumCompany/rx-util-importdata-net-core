@@ -6,10 +6,14 @@
 *.suo
 *.bak
 /src/.vs
-/src/ImportData/bin/Release
+/src/ImportData/bin/
+/src/ImportData/obj/
 /src/ImportData/Properties/PublishProfiles
 /src/ImportData/ImportData.csproj.user
-/.vs/ImportData/
+/src/Tests/obj/
+/src/Tests/bin/
+/.vs/
+/.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -30,7 +34,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-#lib/
 lib64/
 parts/
 sdist/
@@ -103,18 +106,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-/ImportData/bin/Debug/*
-/ImportData/obj/Debug/*
-/.vs/ImportData/*
-/ImportData/obj/*
-
-/Template/.~lock.*
-*.suo
-*.bak
-/src/.vs
-/src/ImportData/bin/Release/netcoreapp3.0
-/src/ImportData/Properties/PublishProfiles
-/src/ImportData/ImportData.csproj.user
-/.vs
-/.vs/VSWorkspaceState.json
-/.vs/slnx.sqlite
