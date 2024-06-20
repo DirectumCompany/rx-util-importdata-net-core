@@ -201,7 +201,7 @@ namespace ImportData
         else
         {
           // Карточку не обновляем, там ошибка, если у документа есть версия.
-          createdOrder = order;//BusinessLogic.UpdateEntity(contract, exceptionList, logger);
+          createdOrder = BusinessLogic.UpdateEntity(order, exceptionList, logger);
         }
 
         if (createdOrder == null)
