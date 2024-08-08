@@ -28,6 +28,9 @@ namespace ImportData
       switch (action)
       {
         case "importcompany":
+          logger.Info("Импорт персон");
+          logger.Info("-------------");
+          EntityProcessor.Process(typeof(Person), xlsxPath, Constants.SheetNames.Employees, extraParameters, ignoreDuplicates, logger);
           logger.Info("Импорт сотрудников");
           logger.Info("-------------");
           EntityProcessor.Process(typeof(Employee), xlsxPath, Constants.SheetNames.Employees, extraParameters, ignoreDuplicates, logger);
@@ -86,20 +89,20 @@ namespace ImportData
         case "importcasefiles":
           EntityProcessor.Process(typeof(CaseFile), xlsxPath, Constants.SheetNames.CaseFiles, extraParameters, ignoreDuplicates, logger);
           break;
-		case "importсountries":
-		  EntityProcessor.Process(typeof(Country), xlsxPath, Constants.SheetNames.Countries, extraParameters, ignoreDuplicates, logger);
-		  break;
+        case "importсountries":
+          EntityProcessor.Process(typeof(Country), xlsxPath, Constants.SheetNames.Countries, extraParameters, ignoreDuplicates, logger);
+          break;
         case "importcurrencies":
-		  EntityProcessor.Process(typeof(Currency), xlsxPath, Constants.SheetNames.Currencies, extraParameters, ignoreDuplicates, logger);
-		  break;
-		default:
+          EntityProcessor.Process(typeof(Currency), xlsxPath, Constants.SheetNames.Currencies, extraParameters, ignoreDuplicates, logger);
+          break;
+        default:
           break;
       }
     }
 
     public static void Main(string[] args)
     {
-      //args = new[] { "-n", "Administrator", "-p", "11111", "-a", "importaddendums", "-ub", "true", "-f", $@"Приложения.xlsx" };
+      //args = new[] { "-n", "Administrator", "-p", "11111", "-a", "importcompany", "-f", $@"C:\Template\Templates\Company.xlsx" };
       logger.Info("=========================== Process Start ===========================");
       var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -167,8 +170,8 @@ namespace ImportData
         }
         catch (WellKnownKeyNotFoundException ex)
         {
-            string message = string.Format("Не найден параметр {0}. Проверьте соответствующую колонку.", ex.Key);
-            logger.Error(message);
+          string message = string.Format("Не найден параметр {0}. Проверьте соответствующую колонку.", ex.Key);
+          logger.Error(message);
         }
         catch (Exception ex)
         {

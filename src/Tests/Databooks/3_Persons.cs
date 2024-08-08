@@ -42,8 +42,7 @@ namespace Tests.Databooks
                 Common.CheckParam(actualPerson.LastName, parameters[shift + 0], "LastName"),
                 Common.CheckParam(actualPerson.FirstName, parameters[shift + 1], "FirstName"),
                 Common.CheckParam(actualPerson.MiddleName, parameters[shift + 2], "MiddleName"),
-                // Пол определяется прикладной логикой.
-                //Common.CheckParam(actualPerson.Sex, BusinessLogic.GetPropertySex((parameters[shift + 3]), "Sex"),
+                Common.CheckParam(actualPerson.Sex, BusinessLogic.GetPropertySex(parameters[shift + 3]), "Sex"),
                 Common.CheckParam(actualPerson.DateOfBirth, parameters[shift + 4], "DateOfBirth"),
                 Common.CheckParam(actualPerson.TIN, parameters[shift + 5], "TIN"),
                 Common.CheckParam(actualPerson.INILA, parameters[shift + 6], "INILA"),

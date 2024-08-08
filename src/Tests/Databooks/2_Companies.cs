@@ -51,7 +51,7 @@ namespace Tests.Databooks
                 Common.CheckParam(actualCompany.NCEO, parameters[shift + 6], "NCEO"),
                 Common.CheckParam(actualCompany.NCEA, parameters[shift + 7], "NCEA"),
                 Common.CheckParam(actualCompany.TRRC, parameters[shift + 8], "TRRC"),
-                Common.CheckParam(actualCompany.City, parameters[shift + 9], "City"),
+                Common.CheckParam(actualCompany.City?.Name, parameters[shift + 9], "City"),
                 //Регион подставляется прикладной по городу, не проверяем.
                 //Common.CheckParam(actualCompany.Region, parameters[shift + 10], "Region"),
                 Common.CheckParam(actualCompany.LegalAddress, parameters[shift + 11], "LegalAddress"),
@@ -61,7 +61,7 @@ namespace Tests.Databooks
                 Common.CheckParam(actualCompany.Homepage, parameters[shift + 15], "Homepage"),
                 Common.CheckParam(actualCompany.Note, parameters[shift + 16], "Note"),
                 Common.CheckParam(actualCompany.Account, parameters[shift + 17], "Account"),
-                Common.CheckParam(actualCompany.Bank, parameters[shift + 18], "Bank"),
+                Common.CheckParam(actualCompany.Bank?.Name.ToLower(), parameters[shift + 18].ToLower(), "Bank"),
                 Common.CheckParam(actualCompany.Responsible, parameters[shift + 19], "Responsible")
             };
 

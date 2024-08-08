@@ -47,15 +47,15 @@ namespace ImportData
     /// <returns>Значения атрибутов.</returns>
     public static PropertyOptions GetPropertyOptions(PropertyInfo p)
     {
-        Attribute[] attrs = Attribute.GetCustomAttributes(p);
+      Attribute[] attrs = Attribute.GetCustomAttributes(p);
 
-        foreach (Attribute attr in attrs)
-        {
-            if (attr is PropertyOptions)
-                return (PropertyOptions)attr;
-        }
+      foreach (Attribute attr in attrs)
+      {
+        if (attr is PropertyOptions)
+          return (PropertyOptions)attr;
+      }
 
-        return null;
+      return null;
     }
 
     /// <summary>
@@ -116,51 +116,51 @@ namespace ImportData
       return null;
     }
 
-		/// <summary>
-		/// Получение сущностей по фильтру.
-		/// </summary>
-		/// <typeparam name="T">Тип сущности.</typeparam>
-		/// <param name="expression">Условие фильтрации.</param>
-		/// <param name="exceptionList">Список ошибок.</param>
-		/// <param name="logger">Логгер</param>
-		/// <returns>Сущности.</returns>
-		public static IEnumerable<T> GetEntitiesWithFilter<T>(Expression<Func<T, bool>> expression, List<Structures.ExceptionsStruct> exceptionList, Logger logger, bool isExpand = false) where T : class
-		{
-			Expression<Func<T, bool>> condition = expression;
-			var filter = new ODataExpression(condition);
+    /// <summary>
+    /// Получение сущностей по фильтру.
+    /// </summary>
+    /// <typeparam name="T">Тип сущности.</typeparam>
+    /// <param name="expression">Условие фильтрации.</param>
+    /// <param name="exceptionList">Список ошибок.</param>
+    /// <param name="logger">Логгер</param>
+    /// <returns>Сущности.</returns>
+    public static IEnumerable<T> GetEntitiesWithFilter<T>(Expression<Func<T, bool>> expression, List<Structures.ExceptionsStruct> exceptionList, Logger logger, bool isExpand = false) where T : class
+    {
+      Expression<Func<T, bool>> condition = expression;
+      var filter = new ODataExpression(condition);
 
-			logger.Info(string.Format("Получение сущностей {0}", PrintInfo(typeof(T))));
+      logger.Info(string.Format("Получение сущностей {0}", PrintInfo(typeof(T))));
 
-			try
-			{
-				var entities = Client.GetEntitiesByFilter<T>(filter, isExpand);
+      try
+      {
+        var entities = Client.GetEntitiesByFilter<T>(filter, isExpand);
 
-				return entities ?? Enumerable.Empty<T>();
-			}
-			catch (Exception ex)
-			{
-				if (ex.InnerException is WebRequestException webEx)
-				{
-					var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
-					logger.Error(message);
-					exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-				}
+        return entities ?? Enumerable.Empty<T>();
+      }
+      catch (Exception ex)
+      {
+        if (ex.InnerException is WebRequestException webEx)
+        {
+          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
+          logger.Error(message);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        }
 
-				if (ex.Message.Contains("(Not Found)"))
-					throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
+        if (ex.Message.Contains("(Not Found)"))
+          throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
 
-				if (ex.Message.Contains("(Unauthorized)"))
-					throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
-			}
-			return Enumerable.Empty<T>();
-		}
+        if (ex.Message.Contains("(Unauthorized)"))
+          throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
+      }
+      return Enumerable.Empty<T>();
+    }
 
-		/// <summary>
-		/// Получение сущностей.
-		/// </summary>
-		/// <typeparam name="T">Тип сущности.</typeparam>
-		/// <returns>Список сущностей.</returns>
-		public static IEnumerable<T> GetEntities<T>(List<Structures.ExceptionsStruct> exceptionList, Logger logger) where T : class
+    /// <summary>
+    /// Получение сущностей.
+    /// </summary>
+    /// <typeparam name="T">Тип сущности.</typeparam>
+    /// <returns>Список сущностей.</returns>
+    public static IEnumerable<T> GetEntities<T>(List<Structures.ExceptionsStruct> exceptionList, Logger logger) where T : class
     {
       try
       {
@@ -380,18 +380,21 @@ namespace ImportData
         {
             {"Зарегистрирован", "Registered"},
             {"Зарезервирован", "Reserved"},
-            {"Не зарегистрирован", "NotRegistered"},
+            {"Не зарегистрирован", "NotRegistered" },
+            {"Registered", "Registered"},
+            {"Reserved", "Reserved"},
+            {"Not registered", "NotRegistered" },
             {"", null}
         };
 
-        try
-        {
-            return RegistrationState[key.Trim()];
-        }
-        catch (KeyNotFoundException ex)
-        {
-            throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
-        }
+      try
+      {
+        return RegistrationState[key.Trim()];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
     }
 
     /// <summary>
@@ -408,17 +411,22 @@ namespace ImportData
             {"Аннулирован", "Obsolete"},
             {"Расторгнут", "Terminated"},
             {"Исполнен", "Closed"},
+            {"Draft", "Draft"},
+            {"Active", "Active"},
+            {"Obsolete", "Obsolete"},
+            {"Terminated", "Terminated"},
+            {"Closed", "Closed"},
             {"", null}
         };
 
-        try
-        {
-            return LifeCycleStates[key];
-        }
-        catch (KeyNotFoundException ex)
-        {
-            throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
-        }
+      try
+      {
+        return LifeCycleStates[key];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
     }
 
     /// <summary>
@@ -437,14 +445,43 @@ namespace ImportData
             {"", null}
         };
 
-        try
+      try
+      {
+        return sexProperty[key];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
+    }
+
+
+    /// <summary>
+    /// Конвертация значения нерезидента из текста в булевую.
+    /// </summary>
+    /// <param name="key">Значение нерезидента из шаблона.</param>
+    /// <returns>Экземпляр записи "Нерезидент".</returns>
+    public static bool GetPropertyResident(string key)
+    {
+      Dictionary<string, bool> nonResident = new Dictionary<string, bool>
         {
-            return sexProperty[key];
-        }
-        catch (KeyNotFoundException ex)
-        {
-            throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
-        }
+            {"Да", true},
+            {"Нет", false},
+            {"Yes", true},
+            {"No", false},
+            {"True", true},
+            {"False", false},
+            {"", false}
+        };
+
+      try
+      {
+        return nonResident[key];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
     }
     #endregion
 
@@ -485,7 +522,7 @@ namespace ImportData
         return string.Empty;
 
       trrc = trrc.Trim();
-     
+
       return System.Text.RegularExpressions.Regex.IsMatch(trrc, @"(^\d{9}$)") ? string.Empty : Constants.Resources.IncorrecTrrcLength;
 
     }
@@ -521,11 +558,11 @@ namespace ImportData
 
       if (nonresident)
         return string.Empty;
-      
+
 
       // Проверить содержание ИНН. Должен состоять только из цифр. (Bug 87755)
       if (!Regex.IsMatch(tin, @"^\d*$"))
-          return Constants.Resources.NotOnlyDigitsTin;
+        return Constants.Resources.NotOnlyDigitsTin;
 
       // Проверить длину ИНН. Для компаний допустимы ИНН длиной 10 или 12 символов, для персон - только 12.
       if (forCompany && tin.Length != 10 && tin.Length != 12)
@@ -576,12 +613,12 @@ namespace ImportData
       return tin.Length == 10 ? CheckTinSum(tin, coefficient10) : (CheckTinSum(tin, coefficient11) && CheckTinSum(tin, coefficient12));
     }
 
-        /// <summary>
-        /// Проверка введенного ОКПО по количеству символов.
-        /// </summary>
-        /// <param name="psrn">ОКПО.</param>
-        /// <returns>Пустая строка, если длина ОКПО в порядке.
-        /// Иначе текст ошибки.</returns>
+    /// <summary>
+    /// Проверка введенного ОКПО по количеству символов.
+    /// </summary>
+    /// <param name="psrn">ОКПО.</param>
+    /// <returns>Пустая строка, если длина ОКПО в порядке.
+    /// Иначе текст ошибки.</returns>
     public static string CheckNceoLength(string nceo, bool nonresident)
     {
       if (string.IsNullOrWhiteSpace(nceo))
