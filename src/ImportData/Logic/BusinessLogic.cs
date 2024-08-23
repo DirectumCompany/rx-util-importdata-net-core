@@ -269,39 +269,45 @@ namespace ImportData
 
       try
       {
-        if (!File.Exists(pathToBody))
+        var pathToBodyVersions = pathToBody.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToArray();
+
+        foreach (var pathToBodyVersion in pathToBodyVersions)
         {
-          var message = string.Format("Не найден файл по заданому пути: \"{0}\"", pathToBody);
-          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-          logger.Warn(message);
+          if (!File.Exists(pathToBodyVersion))
+          {
+            var message = string.Format("Не найден файл по заданому пути: \"{0}\"", pathToBodyVersion);
+            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+            logger.Warn(message);
 
-          return exceptionList;
-        }
+            return exceptionList;
+          }
 
-        // GetExtension возвращает расширение в формате ".<расширение>". Убираем точку.
-        var extention = Path.GetExtension(pathToBody).Replace(".", "");
-        var associatedApplication = BusinessLogic.GetEntityWithFilter<IAssociatedApplications>(a => a.Extension == extention, exceptionList, logger);
+          // GetExtension возвращает расширение в формате ".<расширение>". Убираем точку.
+          var extention = Path.GetExtension(pathToBodyVersion).Replace(".", "");
+          var associatedApplication = BusinessLogic.GetEntityWithFilter<IAssociatedApplications>(a => a.Extension == extention, exceptionList, logger);
 
-        if (associatedApplication != null)
-        {
-          var lastVersion = edoc.LastVersion();
-          if (lastVersion == null || !update_body || lastVersion.AssociatedApplication.Extension != extention)
-            lastVersion = edoc.CreateVersion(edoc.Name, associatedApplication);
+          if (associatedApplication != null)
+          {
+            var lastVersion = edoc.LastVersion();
+            if (lastVersion == null || !update_body || lastVersion.AssociatedApplication.Extension != extention || pathToBodyVersions.Count() > 1)
+              lastVersion = edoc.CreateVersion(edoc.Name, associatedApplication);
 
-          lastVersion.Body ??= new IBinaryData();
+            lastVersion.Body ??= new IBinaryData();
 
-          lastVersion.Body.Value = File.ReadAllBytes(pathToBody);
-          lastVersion.AssociatedApplication = associatedApplication;
+            lastVersion.Body.Value = File.ReadAllBytes(pathToBodyVersion);
+            lastVersion.AssociatedApplication = associatedApplication;
 
-          bool isFillBody = edoc.FillBody(lastVersion);
-        }
-        else
-        {
-          var message = string.Format("Не обнаружено соответствующее приложение-обработчик для файлов с расширением \"{0}\"", extention);
-          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-          logger.Warn(message);
+            bool isFillBody = edoc.FillBody(lastVersion);
+          }
+          else
+          {
+            var message = string.Format("Не обнаружено соответствующее приложение-обработчик для файлов с расширением \"{0}\"", extention);
+            exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+            logger.Warn(message);
 
-          return exceptionList;
+            return exceptionList;
+          }
+
         }
       }
       catch (Exception ex)
