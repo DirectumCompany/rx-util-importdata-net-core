@@ -141,6 +141,10 @@ namespace ImportData
 
         // Создание сущности.
         entity = (IEntityBase)MethodCall(EntityType, Constants.EntityActions.CreateOrUpdate, entity, isNewEntity, isBatch, exceptionList, logger);
+
+        // При необходимость дозаполнить свойства-коллекции.
+        if(entity != null)
+          FillCollections(exceptionList, logger);
       }
       catch (Exception ex)
       {
@@ -149,7 +153,7 @@ namespace ImportData
         return exceptionList;
       }
 
-      return new List<Structures.ExceptionsStruct>();
+      return exceptionList;
     }
 
     /// <summary>
@@ -208,44 +212,12 @@ namespace ImportData
       if (value == null || (value is string && string.IsNullOrEmpty((string)value)))
       {
         if (options.IsRequired())
-          errorType = GetErrorResult(exceptionList, logger, message, options.ExcelName);
+          errorType = BusinessLogic.GetErrorResult(exceptionList, logger, message, options.ExcelName);
         else
-          errorType = GetWarnResult(exceptionList, logger, message, options.ExcelName);
+          errorType = BusinessLogic.GetWarnResult(exceptionList, logger, message, options.ExcelName);
       }
 
       return errorType;
-    }
-
-    /// <summary>
-    /// Добавить ошибку.
-    /// </summary>
-    /// <param name="exceptionList">Список ошибок.</param>
-    /// <param name="logger">Логировщик.</param>
-    /// <param name="message">Текст сообщения при ошибке.</param>
-    /// <param name="propertyName">Значения для подстановки в текст сообщения об ошибке.</param>
-    /// <returns>Тип ошибки Error/</returns>
-    protected string GetErrorResult(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger, string message, params string[] propertyName)
-    {
-      message = string.Format(message, propertyName);
-      exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-      logger.Error(message);
-      return Constants.ErrorTypes.Error;
-    }
-
-    /// <summary>
-    /// Добавить предупреждение.
-    /// </summary>
-    /// <param name="exceptionList">Список ошибок.</param>
-    /// <param name="logger">Логировщик.</param>
-    /// <param name="message">Текст предупреждения.</param>
-    /// <param name="propertyName">Значения для подстановки в текст предупреждения.</param>
-    /// <returns>Тип ошибки Warn/</returns>
-    protected string GetWarnResult(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger, string message, params string[] propertyName)
-    {
-      message = string.Format(message, propertyName);
-      exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
-      logger.Error(message);
-      return Constants.ErrorTypes.Warn;
     }
 
     /// <summary>
@@ -258,10 +230,16 @@ namespace ImportData
       foreach (var property in entityProperties)
       {
         if (ResultValues.ContainsKey(property.Name))
+        {
+          var options = BusinessLogic.GetPropertyOptions(property);
+          if (options?.Characters == AdditionalCharacters.Collection)
+            continue;
+
           if (property.PropertyType == typeof(double))
             property.SetValue(entity, Convert.ToDouble(ResultValues[property.Name], CultureInfo.InvariantCulture));
           else
             property.SetValue(entity, ResultValues[property.Name]);
+        }
       }
     }
 
@@ -312,9 +290,9 @@ namespace ImportData
       catch
       {
         if (options.IsRequired())
-          GetErrorResult(exceptionList, logger, message, options.ExcelName, value);
+          BusinessLogic.GetErrorResult(exceptionList, logger, message, options.ExcelName, value);
         else
-          GetWarnResult(exceptionList, logger, message, options.ExcelName, value);
+          BusinessLogic.GetWarnResult(exceptionList, logger, message, options.ExcelName, value);
 
         return null;
       }
@@ -355,6 +333,16 @@ namespace ImportData
     }
 
     /// <summary>
+    /// Заполнение свойств-коллекций.
+    /// </summary>
+    /// <param name="exceptionList">Список ошибок.</param>
+    /// <param name="logger">Логировщик.</param>
+    protected virtual void FillCollections(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    {
+      // По необходимости переопределяется в дочерних классах.
+    }
+
+    /// <summary>
     /// Проверка валидности реквизитов организации.
     /// </summary>
     /// <param name="nonresident">Признак компании-резидента.</param>
@@ -375,7 +363,7 @@ namespace ImportData
       if (!string.IsNullOrEmpty(resultTIN))
       {
         var message = "Компания не может быть импортирована. Некорректный ИНН. Наименование: \"{0}\", ИНН: {1}. {2}";
-        GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], tin, resultTIN);
+        BusinessLogic.GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], tin, resultTIN);
         isExistNotValidProps = true;
       }
 
@@ -385,7 +373,7 @@ namespace ImportData
       if (!string.IsNullOrEmpty(resultTRRC))
       {
         var message = "Компания не может быть импортирована. Некорректный КПП. Наименование: \"{0}\", КПП: {1}. {2}";
-        GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], trrc, resultTRRC);
+        BusinessLogic.GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], trrc, resultTRRC);
         isExistNotValidProps = true;
       }
 
@@ -395,7 +383,7 @@ namespace ImportData
       if (!string.IsNullOrEmpty(resultPSRN))
       {
         var message = "Компания не может быть импортирована. Некорректный ОГРН. Наименование: \"{0}\", ОГРН: {1}. {2}";
-        GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], psrn, resultPSRN);
+        BusinessLogic.GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], psrn, resultPSRN);
         isExistNotValidProps = true;
       }
 
@@ -405,7 +393,7 @@ namespace ImportData
       if (!string.IsNullOrEmpty(resultNCEO))
       {
         var message = "Компания не может быть импортирована. Некорректный ОКПО. Наименование: \"{0}\", ОКПО: {1}. {2}";
-        GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], nceo, resultNCEO);
+        BusinessLogic.GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], nceo, resultNCEO);
         isExistNotValidProps = true;
       }
 

@@ -38,7 +38,7 @@ namespace ImportData
       if (!string.IsNullOrEmpty(resultCodeDepartment))
       {
         var message = "Подразделение не может быть импортировано. Некорректный код подразделения. Наименование: \"{0}\", Код подразделения: {1}. {2}";
-        GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], code, resultCodeDepartment);
+        BusinessLogic.GetErrorResult(exceptionList, logger, message, (string)ResultValues[Constants.KeyAttributes.Name], code, resultCodeDepartment);
         return true;
       }
 

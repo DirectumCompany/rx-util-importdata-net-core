@@ -94,12 +94,26 @@ namespace ImportData
       public const string PSRN = "PSRN";
       public const string NCEO = "NCEO";
       public const string NCEA = "NCEA";
+      public const string OpenByDefaultForReading = "OpenByDefaultForReading";
+      public const string MonitoringType = "MonitoringType";
+      public const string RegisterType = "RegisterType";
+      public const string DocumentFlow = "DocumentFlow";
+      public const string NumberingSection = "NumberingSection";
+      public const string NumberingPeriod = "NumberingPeriod";
+      public const string NumberOfDigitsInNumber = "NumberOfDigitsInNumber";
+      public const string NumberingType = "NumberingType";
+      public const string DeadlineInDays = "DeadlineInDays";
+      public const string DeadlineInHours = "DeadlineInHours";
+      public const string Extension = "Extension";
+      public const string DocumentKinds = "DocumentKinds";
+      public const string RecipientLinks = "RecipientLinks";
     }
 
     public static Dictionary<string, string> AttributeValue = new Dictionary<string, string>
       {
         {KeyAttributes.Status, "Active"},
         {KeyAttributes.TypeAuthentication, "Windows"},
+        {KeyAttributes.RegisterType, "Registration"},
       };
 
     public class EntityActions
@@ -130,7 +144,11 @@ namespace ImportData
       public const string CaseFiles = "Номенклатура дел";
       public const string Countries = "Страны";
       public const string Currencies = "Валюты";
-
+      public const string Roles = "Роли";
+      public const string AssociatedApplications = "Приложения";
+      public const string ContractCategories = "КатегорииДоговоров";
+      public const string DocumentRegisters = "ЖурналыРегистрации";
+      public const string DocumentKinds = "ВидыДокументов";
     }
 
     public class Actions
@@ -154,6 +172,11 @@ namespace ImportData
       public const string ImportCaseFiles = "importcasefiles";
       public const string ImportCountries = "importсountries";
       public const string ImportCurrencies = "importcurrencies";
+      public const string ImportAssociatedApplications = "importassociatedapplications";
+      public const string ImportContractCategories = "importcontractcategories";
+      public const string ImportDocumentRegisters = "importdocumentregisters";
+      public const string ImportDocumentKinds = "importdocumentkinds";
+      public const string ImportRoles = "importroles";
 
       // Инициализация клиента, для тестов.
       public const string InitForTests = "init";
@@ -179,6 +202,11 @@ namespace ImportData
                 {ImportCountries, ImportCountries},
                 {ImportCurrencies, ImportCurrencies},
                 {ImportSubstitutions, ImportSubstitutions},
+                {ImportRoles, ImportRoles},
+                {ImportAssociatedApplications, ImportAssociatedApplications},
+                {ImportContractCategories, ImportContractCategories},
+                {ImportDocumentRegisters, ImportDocumentRegisters},
+                {ImportDocumentKinds, ImportDocumentKinds},
 
                 // Инициализация клиента, для тестов.
                 {InitForTests, InitForTests}
@@ -202,6 +230,8 @@ namespace ImportData
       public const string ErrorFindEmployee = "Не удалось найти в системе соответствующего сотрудника \"{0}\".";
       public const string FileNotExist = "Не найден файл по пути {0}.";
       public const string NeedRequiredDocumentBody = "Импортирумая сущность должна содержать ссылку на тело документа, столбец с наименованием {0}.";
+      public const string EntityNotLoaded = "Сущность {0} не загружена, т.к. уже существует в системе.";
+      public const string RegistrationGroupName = "Группа регистрации";
     }
 
     public class ConfigServices
@@ -237,6 +267,7 @@ namespace ImportData
   {
     Default = 0,
     ForSearch = 1,
-    CreateFromOtherProperties = 2
+    CreateFromOtherProperties = 2,
+    Collection = 3
   }
 }

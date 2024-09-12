@@ -95,6 +95,21 @@ namespace ImportData
         case "importcurrencies":
           EntityProcessor.Process(typeof(Currency), xlsxPath, Constants.SheetNames.Currencies, extraParameters, ignoreDuplicates, isBatch, logger);
           break;
+        case "importassociatedapplications":
+          EntityProcessor.Process(typeof(AssociatedApplication), xlsxPath, Constants.SheetNames.AssociatedApplications, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importcontractcategories":
+          EntityProcessor.Process(typeof(ContractCategory), xlsxPath, Constants.SheetNames.ContractCategories, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importdocumentregisters":
+          EntityProcessor.Process(typeof(DocumentRegister), xlsxPath, Constants.SheetNames.DocumentRegisters, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importdocumentkinds":
+          EntityProcessor.Process(typeof(DocumentKind), xlsxPath, Constants.SheetNames.DocumentKinds, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importroles":
+          EntityProcessor.Process(typeof(Role), xlsxPath, Constants.SheetNames.Roles, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
         default:
           break;
       }

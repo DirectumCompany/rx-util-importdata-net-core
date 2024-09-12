@@ -19,7 +19,7 @@ namespace ImportData
         ResultValues[Constants.KeyAttributes.HeadCompany] = null;
       }
 
-      ResultValues[Constants.KeyAttributes.Nonresident] = BusinessLogic.GetPropertyResident((string)ResultValues[Constants.KeyAttributes.Nonresident]);
+      ResultValues[Constants.KeyAttributes.Nonresident] = BusinessLogic.GetBoolProperty((string)ResultValues[Constants.KeyAttributes.Nonresident]);
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
 
       var nonresident = (bool)ResultValues[Constants.KeyAttributes.Nonresident];
