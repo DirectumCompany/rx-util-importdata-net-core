@@ -1,0 +1,151 @@
+{
+  "$type": "Sungero.Metadata.SolutionMetadata, Sungero.Metadata",
+  "NameGuid": "612a5c16-2a77-46c6-bb12-1b7edac6e226",
+  "Name": "Test",
+  "AsyncHandlers": [],
+  "ClientAssemblyName": "DirRX.Test.Client",
+  "ClientBaseAssemblyName": "DirRX.Test.ClientBase",
+  "ClientBaseNamespace": "DirRX.Test.ClientBase",
+  "ClientNamespace": "DirRX.Test.Client",
+  "Code": "Test",
+  "CompanyCode": "DirRX",
+  "Cover": {
+    "NameGuid": "efed7152-e7f1-4599-9e2e-f088a95e28b5",
+    "Actions": [],
+    "Background": null,
+    "Footer": {
+      "NameGuid": "027fb1af-428c-4830-8fbe-060e6d4970b6",
+      "BackgroundPosition": "Stretch"
+    },
+    "Groups": [],
+    "Header": {
+      "NameGuid": "88bc85e0-e870-4d85-b1ed-fc4702fd9d0a",
+      "BackgroundPosition": "Stretch"
+    },
+    "RemoteControls": [],
+    "Tabs": []
+  },
+  "DesktopViews": [],
+  "ExplorerTreeOrder": [
+    {
+      "ItemId": "ea478fb1-5cef-4504-a35b-1638aab5d16c"
+    },
+    {
+      "ItemId": "868e2bbc-06db-4352-ad37-755407331a82",
+      "PreviousItemId": "ea478fb1-5cef-4504-a35b-1638aab5d16c"
+    },
+    {
+      "ItemId": "83ef4265-b333-4926-ae9d-4852906c8500",
+      "PreviousItemId": "868e2bbc-06db-4352-ad37-755407331a82"
+    },
+    {
+      "ItemId": "93d625de-600a-48a8-b7ea-52ce80f5de00",
+      "PreviousItemId": "83ef4265-b333-4926-ae9d-4852906c8500"
+    },
+    {
+      "ItemId": "6d468be4-5481-4621-b048-0862324d8022",
+      "PreviousItemId": "93d625de-600a-48a8-b7ea-52ce80f5de00"
+    },
+    {
+      "ItemId": "755ebaa1-5196-4f8b-b45f-f2bd7cc1d1f7",
+      "PreviousItemId": "6d468be4-5481-4621-b048-0862324d8022"
+    },
+    {
+      "ItemId": "eaf695fc-ab4c-4b55-9d22-9694443e6880",
+      "PreviousItemId": "755ebaa1-5196-4f8b-b45f-f2bd7cc1d1f7"
+    },
+    {
+      "ItemId": "b1682d13-dbf1-40ab-9ad6-9a8a39e9c016",
+      "PreviousItemId": "eaf695fc-ab4c-4b55-9d22-9694443e6880"
+    },
+    {
+      "ItemId": "e1957dfc-0e00-4c86-a477-f43d054f7476",
+      "PreviousItemId": "b1682d13-dbf1-40ab-9ad6-9a8a39e9c016"
+    },
+    {
+      "ItemId": "656928b8-efd1-411e-b1df-5bba4ba6777b",
+      "PreviousItemId": "e1957dfc-0e00-4c86-a477-f43d054f7476"
+    },
+    {
+      "ItemId": "8472cdea-1c44-4772-83c3-5a69e26443e2",
+      "PreviousItemId": "656928b8-efd1-411e-b1df-5bba4ba6777b"
+    },
+    {
+      "ItemId": "754b8521-8395-433f-9abe-16bbc4c913c0",
+      "PreviousItemId": "8472cdea-1c44-4772-83c3-5a69e26443e2"
+    },
+    {
+      "ItemId": "224a8af4-0a7f-4966-9326-ed33748e95ee",
+      "PreviousItemId": "754b8521-8395-433f-9abe-16bbc4c913c0"
+    },
+    {
+      "ItemId": "1056f7ca-ef4f-40aa-b119-90b692ad5823",
+      "PreviousItemId": "224a8af4-0a7f-4966-9326-ed33748e95ee"
+    },
+    {
+      "ItemId": "726b05a7-1f64-4837-ad90-14def7138be3",
+      "PreviousItemId": "1056f7ca-ef4f-40aa-b119-90b692ad5823"
+    },
+    {
+      "ItemId": "3916a830-47d8-4492-9ebc-cd4063df8a3f",
+      "PreviousItemId": "726b05a7-1f64-4837-ad90-14def7138be3"
+    },
+    {
+      "ItemId": "7f4778a8-fb8a-43b1-9a64-ae8bfe01fe53",
+      "PreviousItemId": "3916a830-47d8-4492-9ebc-cd4063df8a3f"
+    },
+    {
+      "ItemId": "1f8a7b8a-9a32-4238-9b71-25d9cae39598",
+      "PreviousItemId": "7f4778a8-fb8a-43b1-9a64-ae8bfe01fe53"
+    },
+    {
+      "ItemId": "8ed7ec50-4908-4afd-9fae-547518828d05",
+      "PreviousItemId": "1f8a7b8a-9a32-4238-9b71-25d9cae39598"
+    },
+    {
+      "ItemId": "35688b12-e779-4f5d-8309-14c2ef815908",
+      "PreviousItemId": "8ed7ec50-4908-4afd-9fae-547518828d05"
+    },
+    {
+      "ItemId": "c1390956-da21-4dba-99ad-4d5607bfeed6",
+      "PreviousItemId": "35688b12-e779-4f5d-8309-14c2ef815908"
+    },
+    {
+      "ItemId": "c150c132-b8e6-46da-993e-002c3920d167",
+      "PreviousItemId": "c1390956-da21-4dba-99ad-4d5607bfeed6"
+    }
+  ],
+  "IconResourcesKeys": [],
+  "Importance": "Medium",
+  "InterfaceAssemblyName": "Sungero.Domain.Interfaces",
+  "InterfaceNamespace": "DirRX.Test",
+  "IsolatedAssemblyName": "DirRX.Test.Isolated",
+  "IsolatedNamespace": "DirRX.Test.Isolated",
+  "IsVisible": false,
+  "OrderedSpecialFolders": [],
+  "PublicStructures": [],
+  "ResourceInterfaceAssemblyName": "Sungero.Domain.Interfaces",
+  "ResourceInterfaceNamespace": "DirRX.Test",
+  "ResourcesKeys": [],
+  "ServerAssemblyName": "DirRX.Test.Server",
+  "ServerNamespace": "DirRX.Test.Server",
+  "SharedAssemblyName": "DirRX.Test.Shared",
+  "SharedNamespace": "DirRX.Test.Shared",
+  "SpecialFolders": [],
+  "Version": "0.0.1.0",
+  "Widgets": [],
+  "Versions": [
+    {
+      "Type": "SolutionMetadata",
+      "Number": 8
+    },
+    {
+      "Type": "ModuleMetadata",
+      "Number": 8
+    },
+    {
+      "Type": "DomainApi",
+      "Number": 3
+    }
+  ]
+}
