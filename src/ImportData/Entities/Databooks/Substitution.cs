@@ -14,10 +14,10 @@ namespace ImportData.Entities.Databooks
     {
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
 
-      if (ResultValues[Constants.KeyAttributes.DateOfBirth] != null && (DateTimeOffset)ResultValues[Constants.KeyAttributes.StartDate] == DateTimeOffset.MinValue)
+      if (ResultValues[Constants.KeyAttributes.StartDate] != null && (DateTimeOffset)ResultValues[Constants.KeyAttributes.StartDate] == DateTimeOffset.MinValue)
         ResultValues[Constants.KeyAttributes.StartDate] = null;
 
-      if (ResultValues[Constants.KeyAttributes.DateOfBirth] != null && (DateTimeOffset)ResultValues[Constants.KeyAttributes.EndDate] == DateTimeOffset.MinValue)
+      if (ResultValues[Constants.KeyAttributes.StartDate] != null && (DateTimeOffset)ResultValues[Constants.KeyAttributes.EndDate] == DateTimeOffset.MinValue)
         ResultValues[Constants.KeyAttributes.EndDate] = null;
 
       return false;

@@ -9,9 +9,9 @@ InstallDir "$PROGRAMFILES64\Directum Company\DirectumRX\ImportData"
 ; Наименование инсталятора.
 OutFile "Setup.exe"
 
-VIProductVersion 4.0.41139.0
-VIAddVersionKey FileVersion 4.0.41139.0
-VIAddVersionKey ProductVersion 4.0.41139.0
+VIProductVersion 4.0.41244.0
+VIAddVersionKey FileVersion 4.0.41244.0
+VIAddVersionKey ProductVersion 4.0.41244.0
 XPStyle on
 ; Управление страницами.
 Page directory 
