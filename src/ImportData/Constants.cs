@@ -149,6 +149,9 @@ namespace ImportData
       public const string ContractCategories = "КатегорииДоговоров";
       public const string DocumentRegisters = "ЖурналыРегистрации";
       public const string DocumentKinds = "ВидыДокументов";
+      public const string Waybill = "Накладные";
+      public const string UTD = "УПД";
+      public const string ContractStatement = "Акты";
     }
 
     public class Actions
@@ -177,6 +180,9 @@ namespace ImportData
       public const string ImportDocumentRegisters = "importdocumentregisters";
       public const string ImportDocumentKinds = "importdocumentkinds";
       public const string ImportRoles = "importroles";
+      public const string ImportWaybills = "importwaybills";
+      public const string ImportUTD = "importutd";
+      public const string ImportContractStatement = "importcontractstatement";
 
       // Инициализация клиента, для тестов.
       public const string InitForTests = "init";
@@ -207,6 +213,9 @@ namespace ImportData
                 {ImportContractCategories, ImportContractCategories},
                 {ImportDocumentRegisters, ImportDocumentRegisters},
                 {ImportDocumentKinds, ImportDocumentKinds},
+                {ImportWaybills, ImportWaybills},
+                {ImportUTD, ImportUTD},
+                {ImportContractStatement, ImportContractStatement},
 
                 // Инициализация клиента, для тестов.
                 {InitForTests, InitForTests}

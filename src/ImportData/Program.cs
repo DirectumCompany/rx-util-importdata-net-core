@@ -7,6 +7,7 @@ using NLog;
 using ImportData.Entities.Databooks;
 using ImportData.IntegrationServicesClient.Exceptions;
 using ImportData.IntegrationServicesClient.Models;
+using ImportData.Entities.EDocs;
 
 namespace ImportData
 {
@@ -109,6 +110,15 @@ namespace ImportData
           break;
         case "importroles":
           EntityProcessor.Process(typeof(Role), xlsxPath, Constants.SheetNames.Roles, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importwaybills":
+          EntityProcessor.Process(typeof(Waybill), xlsxPath, Constants.SheetNames.Waybill, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importutd":
+          EntityProcessor.Process(typeof(UniversalTransferDocument), xlsxPath, Constants.SheetNames.UTD, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importcontractstatement":
+          EntityProcessor.Process(typeof(ContractStatement), xlsxPath, Constants.SheetNames.ContractStatement, extraParameters, ignoreDuplicates, isBatch, logger);
           break;
         default:
           break;
