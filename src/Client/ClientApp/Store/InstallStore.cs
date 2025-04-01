@@ -64,6 +64,7 @@ namespace ClientApp.Store
         new UIVariable() { Name = UIControlsName.Password, Control = "password", DisplayName = "Пароль", Value = "11111" },
         new UIVariable() { Name = UIControlsName.SearchDoubles, Control = "boolean_string_control", DisplayName = "Признак поиска дубликатов", Value = "true", State = new ControlState { IsRequired = false } },
         new UIVariable() { Name = UIControlsName.UpdateBody, Control = "boolean_string_control", DisplayName = "Признак обновления последней версии документа", State = new ControlState { IsRequired = false } },
+        new UIVariable() { Name = UIControlsName.BatchRequest, Control = UIControls.BooleanControl, DisplayName = "Пакетный запрос", State = new ControlState { IsRequired = false } },
         new UIVariable() { Name = UIControlsName.DocRegisterId, Control = "string_control", DisplayName = "Журнал регистрации", State = new ControlState { IsRequired = false } }
       };
 
@@ -135,6 +136,7 @@ namespace ClientApp.Store
       AddArgument("-dr", UIControlsName.DocRegisterId, result);
       AddArgument("-d", UIControlsName.SearchDoubles, result);
       AddArgument("-ub", UIControlsName.UpdateBody, result);
+      AddArgument("--batch", UIControlsName.BatchRequest, result);
 
       var resultStr = string.Join(' ', result);
       Console.WriteLine($"Operation: CreateArguments. result \"{resultStr}\"");
@@ -152,9 +154,9 @@ namespace ClientApp.Store
       }
     }
 
-    public InstallStore(HttpClient client)
+    public InstallStore(CommonApi client)
     {
-      this.apiClient = new CommonApi(client);
+      this.apiClient = client;
     }
   }
 }

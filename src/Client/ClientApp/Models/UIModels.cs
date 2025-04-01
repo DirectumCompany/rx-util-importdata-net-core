@@ -42,5 +42,7 @@ namespace ClientApp.Models
       public static string SearchDoubles { get; } = "search_doubles";
       public static string UpdateBody { get; } = "update_body";
       public static string DocRegisterId { get; } = "doc_register_id";
+      
+      public static string BatchRequest { get; } = "batch_request";
   }
 }

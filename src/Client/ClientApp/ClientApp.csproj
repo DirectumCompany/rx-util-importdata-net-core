@@ -6,8 +6,6 @@
     <BlazorEnableCompression>false</BlazorEnableCompression>
     <StaticWebAssetBasePath>ClientApp/</StaticWebAssetBasePath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RestoreLockedMode>true</RestoreLockedMode>
   </PropertyGroup>
 
   <Target Name="Test" AfterTargets="BeforePublish">
