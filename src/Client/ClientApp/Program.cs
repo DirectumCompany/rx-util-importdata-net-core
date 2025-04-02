@@ -14,14 +14,11 @@ using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
-string uri = builder.HostEnvironment.IsDevelopment()
-    ? "http://localhost:5000/"
-    : builder.HostEnvironment.BaseAddress;
-builder.Services.AddHttpClient<CommonApi>(client => client.BaseAddress = new Uri(uri));
+builder.RootComponents.Add<HeadOutlet>("head::after");
+builder.Services.AddHttpClient<CommonApi>(client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 builder.Services.AddMudServices();
 builder.Services.AddScoped<IRefreshService, RefreshService>();
 builder.Services.AddScoped<InstallStore>();
-builder.RootComponents.Add<HeadOutlet>("head::after");
 
 string assemblyFileVersion = Assembly.GetExecutingAssembly()
     .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;

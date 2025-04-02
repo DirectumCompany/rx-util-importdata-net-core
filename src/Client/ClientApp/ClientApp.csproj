@@ -2,17 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <PublishDir>build</PublishDir>
-    <BlazorEnableCompression>false</BlazorEnableCompression>
-    <StaticWebAssetBasePath>ClientApp/</StaticWebAssetBasePath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <Target Name="Test" AfterTargets="BeforePublish">
-    <PropertyGroup>
-      <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
-    </PropertyGroup>
-  </Target>
 
   <ItemGroup>
     <PackageReference Include="BlazorMonaco" Version="3.1.0" />
@@ -26,16 +17,5 @@
     <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="10.9.0" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="YamlDotNet" Version="13.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="build\**" />
-    <EmbeddedResource Remove="build\**" />
-    <None Remove="build\**" />
-    <Content Remove="build\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Pages\Index.razor.css" />
   </ItemGroup>
 </Project>

@@ -46,6 +46,11 @@ namespace ImportUtilServer.Models
                         process.Close(); //завершает процесс
                     }
                 }
+                catch(Exception ex)
+                {
+                    lock (outputData)
+                        outputData.Add(ex.Message);
+                }
                 finally
                 {
                     isImportActive = false;

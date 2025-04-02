@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClientApp\ClientApp.csproj" />
   </ItemGroup>
 
 </Project>
