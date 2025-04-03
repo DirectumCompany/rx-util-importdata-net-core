@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using ImportUtilServer.Controllers;
 
@@ -14,7 +15,7 @@ namespace ImportUtilServer.Models
         public Import(IConfiguration configuration)
         {
             utilPath = configuration.GetValue<string>("UtilPath");
-            utilPath = Path.GetFullPath(utilPath, Assembly.GetEntryAssembly().Location);
+            utilPath = Path.GetFullPath(utilPath, Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
         }
 
         public void Execute(string arguments)
@@ -29,7 +30,8 @@ namespace ImportUtilServer.Models
                     Console.WriteLine($"Import.Execute: path - {utilPath} arguments - {arguments}");
                     isImportActive = true;
                     using Process process = new(); 
-                    process.StartInfo.FileName = "dotnet";
+                    process.StartInfo.FileName = RuntimeInformation
+                        .IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
                     process.StartInfo.Arguments = $"{utilPath} {arguments}";
                     process.StartInfo.CreateNoWindow = false;
                     process.StartInfo.RedirectStandardOutput = true;

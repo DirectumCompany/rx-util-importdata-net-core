@@ -31,7 +31,6 @@
       <ImportDataUIPath>..\Client\ImportUtilServer</ImportDataUIPath>
       <ImportDataUIPublishOutputPath>$(MSBuildProjectDirectory)\$(OutputPath)ImportDataUI</ImportDataUIPublishOutputPath>
     </PropertyGroup>
-    <Message Importance="high" Text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa $(ImportDataUIPublishOutputPath)" />
     <MSBuild Projects="$(ImportDataUIPath)\ImportUtilServer.csproj" Targets="Publish" 
              Properties="Configuration=Release;PublishDir=$(ImportDataUIPublishOutputPath)" />
   </Target>
