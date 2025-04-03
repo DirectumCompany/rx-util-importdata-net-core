@@ -29,6 +29,8 @@ namespace ImportUtilServer.Models
                 {
                     Console.WriteLine($"Import.Execute: path - {utilPath} arguments - {arguments}");
                     isImportActive = true;
+                    if (!File.Exists(utilPath))
+                        throw new FileNotFoundException($"Утилита импорта по пути {utilPath} не найдена");
                     using Process process = new(); 
                     process.StartInfo.FileName = RuntimeInformation
                         .IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
