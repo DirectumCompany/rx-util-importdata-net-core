@@ -14,9 +14,9 @@ public class ImportController : Controller
     }
     
     [HttpGet("import")]
-    public async Task<IActionResult> Import(string arguments)
+    public IActionResult Import(string arguments)
     {
-        await _import.ExecuteAsync(arguments);
+        _import.Execute(arguments);
         return Ok();
     }
 

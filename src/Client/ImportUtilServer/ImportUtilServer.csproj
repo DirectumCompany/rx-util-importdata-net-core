@@ -15,4 +15,7 @@
     <ProjectReference Include="..\ClientApp\ClientApp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
 </Project>

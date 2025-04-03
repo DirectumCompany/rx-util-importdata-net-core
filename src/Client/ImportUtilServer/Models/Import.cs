@@ -15,7 +15,7 @@ namespace ImportUtilServer.Models
             utilExePath = configuration.GetValue<string>("UtilExePath");
         }
 
-        public async Task ExecuteAsync(string arguments)
+        public void Execute(string arguments)
         {
             if (isImportActive)
                 return;
@@ -24,27 +24,25 @@ namespace ImportUtilServer.Models
             {
                 try
                 {
-                    Console.WriteLine($"Import.ExecuteAsync: exePath - {utilExePath} arguments - {arguments}");
+                    Console.WriteLine($"Import.Execute: exePath - {utilExePath} arguments - {arguments}");
                     isImportActive = true;
                     using Process process = new();
-                    {
-                        process.StartInfo.FileName = utilExePath;
-                        //process.StartInfo.WorkingDirectory = @"c:\temp\";
-                        process.StartInfo.Arguments = arguments;
-                        process.StartInfo.CreateNoWindow = false;
-                        process.StartInfo.RedirectStandardOutput = true;
-                        process.StartInfo.RedirectStandardError = true;
-                        process.OutputDataReceived +=
-                            DataReceivedEventHandler; //обработчик события при получении очередной строки с данными
-                        process.ErrorDataReceived +=
-                            ErrorReceivedEventHandler; //обработчик события при получении ошибки
+                    
+                    process.StartInfo.FileName = utilExePath;
+                    process.StartInfo.Arguments = arguments;
+                    process.StartInfo.CreateNoWindow = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.OutputDataReceived +=
+                        DataReceivedEventHandler; //обработчик события при получении очередной строки с данными
+                    process.ErrorDataReceived +=
+                        ErrorReceivedEventHandler; //обработчик события при получении ошибки
 
-                        process.Start(); //запускаем процесс
-                        process.BeginOutputReadLine(); //начинаем считывать данные из потока 
-                        process.BeginErrorReadLine(); //начинаем считывать данные об ошибках 
-                        process.WaitForExitAsync().Wait(); //ожидаем окончания работы приложения, чтобы очистить буфер
-                        process.Close(); //завершает процесс
-                    }
+                    process.Start(); //запускаем процесс
+                    process.BeginOutputReadLine(); //начинаем считывать данные из потока 
+                    process.BeginErrorReadLine(); //начинаем считывать данные об ошибках 
+                    process.WaitForExitAsync().Wait(); //ожидаем окончания работы приложения, чтобы очистить буфер
+                    process.Close(); //завершает процесс
                 }
                 catch(Exception ex)
                 {
