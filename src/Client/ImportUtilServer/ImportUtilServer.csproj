@@ -17,5 +17,7 @@
 
   <ItemGroup>
     <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.Production.json" CopyToOutputDirectory="Never" />
   </ItemGroup>
+
 </Project>
