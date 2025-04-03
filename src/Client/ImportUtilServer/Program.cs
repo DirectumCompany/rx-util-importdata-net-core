@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ImportUtilServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,4 +36,11 @@ if (app.Environment.IsDevelopment())
 
 app.MapFallbackToFile("index.html");
 
-app.Run();
+var runningApp = app.RunAsync();
+if (!app.Environment.IsDevelopment())
+{
+    var url = app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
+    if (url != null)
+        Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+}
+await runningApp;
