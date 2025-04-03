@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using NLog;
 using Simple.OData.Client;
 
@@ -46,6 +47,9 @@ namespace ImportData.IntegrationServicesClient
       if (instance == null)
         instance = new Client(userName, password, ConfigSettingsService.GetConfigSettingsValueByName(Constants.ConfigServices.IntegrationServiceUrlParamName));
 
+      var batchRequestsCount = ConfigSettingsService.GetIntParamValue(Constants.ConfigServices.BatchRequestsCountParamName, "100");
+      BatchClient.Setup(client, batchRequestsCount);
+
       logger.Info("Подготовка клиента OData.");
     }
 
@@ -85,7 +89,12 @@ namespace ImportData.IntegrationServicesClient
     /// <returns>Созданна сущность.</returns>
     public static T CreateEntity<T>(T entity, Logger logger) where T : class
     {
-      var data = client.For<T>().Set(entity).InsertEntryAsync().Result;
+      var task = Task.Run(async () =>
+      {
+        return await client.For<T>().Set(entity).InsertEntryAsync();
+      });
+
+      var data = task.Result;
 
       return data;
     }
@@ -98,7 +107,12 @@ namespace ImportData.IntegrationServicesClient
     /// <returns>Обновленная сущность.</returns>
     public static T UpdateEntity<T>(T entity) where T : class
     {
-      var data = client.For<T>().Key(entity).Set(entity).UpdateEntryAsync().Result;
+      var task = Task.Run(async () =>
+      {
+        return await client.For<T>().Key(entity).Set(entity).UpdateEntryAsync();
+      });
+
+      var data = task.Result;
 
       return data;
     }

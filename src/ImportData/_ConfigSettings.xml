@@ -2,4 +2,5 @@
 <settings>
   <var name="INTEGRATION_SERVICE_URL" value="http://localhost/integration/odata" />
   <var name="INTEGRATION_SERVICE_REQUEST_TIMEOUT" value="600" />
+  <var name="INTEGRATION_SERVICE_BATCH_REQUESTS_COUNT" value="100" />
 </settings>

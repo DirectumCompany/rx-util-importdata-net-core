@@ -38,14 +38,14 @@ namespace Tests.Databooks
 
             if (actualEmployee == null)
                 return $"Не найден сотрудник {name}";
-            if (actualEmployee == null)
+            if (actualLogin == null)
                 return $"Не найден логин {name}";
             if (actualPerson == null)
                 return $"Не найдена персона {name}";
 
             var errorList = new List<string>
             {
-                Common.CheckParam(actualLogin, parameters[shift + 0], "LoginName"),
+                Common.CheckParam(actualLogin?.LoginName, parameters[shift + 0], "LoginName"),
                 Common.CheckParam(actualPerson.LastName, parameters[shift + 1], "LastName"),
                 Common.CheckParam(actualPerson.FirstName, parameters[shift + 2], "FirstName"),
                 Common.CheckParam(actualPerson.MiddleName, parameters[shift + 3], "MiddleName")

@@ -2,110 +2,105 @@
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ImportData.Entities.Databooks
 {
   public class Login : Entity
   {
-    public int PropertiesCount = 4;
+    public override int PropertiesCount { get { return 5; } }
+    protected override Type EntityType { get { return typeof(ILogins); } }
 
-    /// <summary>
-    /// Получить наименование число запрашиваемых параметров.
-    /// </summary>
-    /// <returns>Число запрашиваемых параметров.</returns>
-    public override int GetPropertiesCount()
-    {
-      return PropertiesCount;
-    }
-
-    /// <summary>
-    /// Сохранение сущности в RX.
-    /// </summary>
-    /// <param name="shift">Сдвиг по горизонтали в XLSX документе. Необходим для обработки документов, составленных из элементов разных сущностей.</param>
-    /// <param name="logger">Логировщик.</param>
-    /// <returns>Число запрашиваемых параметров.</returns>
-    public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(Logger logger, bool supplementEntity, string ignoreDuplicates, int shift = 0)
+    public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(NLog.Logger logger, string ignoreDuplicates, bool isBatch = false)
     {
       var exceptionList = new List<Structures.ExceptionsStruct>();
 
-      var loginName = this.Parameters[shift + 0].Trim();
-
-      if (string.IsNullOrEmpty(loginName))
+      // Проверим наличие полей в таблице, получим сотрудника в системе, чтобы после импорта логина добавить логин к сотруднику.
+      if (!CheckEmployee(EntityType, logger, out var exceptions, out var employee))
       {
-        var message = string.Format("Не заполнено поле \"Логин\".");
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        logger.Error(message);
-
+        exceptionList.AddRange(exceptions);
         return exceptionList;
       }
+      // Импорт логинов.
+      exceptionList.AddRange(base.SaveToRX(logger, ignoreDuplicates));
 
-      var lastName = this.Parameters[shift + 1].Trim();
-
-      if (string.IsNullOrEmpty(lastName))
+      // Проверим, что сущность была создана.
+      if (entity != null)
       {
-        var message = string.Format("Не заполнено поле \"Фамилия\".");
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        logger.Error(message);
-
-        return exceptionList;
-      }
-
-      var firstName = this.Parameters[shift + 2].Trim();
-
-      if (string.IsNullOrEmpty(firstName))
-      {
-        var message = string.Format("Не заполнено поле \"Имя\".");
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        logger.Error(message);
-
-        return exceptionList;
-      }
-      var middleName = this.Parameters[shift + 3].Trim();
-      var emplName = string.IsNullOrWhiteSpace(middleName) ? string.Format("{0} {1}", lastName, firstName) : string.Format("{0} {1} {2}", lastName, firstName, middleName);
-      var employee = BusinessLogic.GetEntityWithFilter<IEmployees>(x => x.Name == emplName, exceptionList, logger);
-
-      if (employee == null)
-      {
-        var message = string.Format("Не удалось найти соответствующего сотрудника \"{0} {1} {2}\".", lastName, firstName, middleName);
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        logger.Error(message);
-
-        return exceptionList;
-      }
-
-      try
-      {
-
-        if (ignoreDuplicates.ToLower() != Constants.ignoreDuplicates.ToLower())
-        {
-          var login = BusinessLogic.GetEntityWithFilter<ILogins>(x => x.LoginName == loginName, exceptionList, logger);
-          // Обновление сущности при условии, что найдено одно совпадение.
-          if (login == null)
-          {
-            login = new ILogins();
-            login.LoginName = loginName;
-            login.TypeAuthentication = "Windows";
-            login.NeedChangePassword = false;
-            login.Status = "Active";
-            login = BusinessLogic.CreateEntity<ILogins>(login, exceptionList, logger);
-          }
-
-          if (login != null)
-          {
-              employee.Login = login;
-              BusinessLogic.UpdateEntity<IEmployees>(employee, exceptionList, logger);
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = ex.Message });
-
-        return exceptionList;
+        // Добавляем информацию по логину для сотрудника и обновляем данные о сотруднике в системе.
+        employee.Login = (ILogins)entity;
+        MethodCall(employee.GetType(), Constants.EntityActions.CreateOrUpdate, employee, false, isBatch, exceptionList, logger);
       }
 
       return exceptionList;
+    }
+
+    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    {
+      ResultValues[Constants.KeyAttributes.NeedChangePassword] = false;
+      ResultValues[Constants.KeyAttributes.TypeAuthentication] = Constants.AttributeValue[Constants.KeyAttributes.TypeAuthentication];
+      ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
+
+      return false;
+    }
+
+    /// <summary>
+    /// Проверка обязательных для заполнения параметров и поиск сущности.
+    /// </summary>
+    /// <param name="entityType">Тип сущности.</param>
+    /// <param name="logger">Логировщик.</param>
+    /// <param name="exceptionList">Список ошибок.</param>
+    /// <param name="employee">Сотрудник в системе.</param>
+    /// <returns>Результат проверки.</returns>
+    private bool CheckEmployee(Type entityType, Logger logger, out List<Structures.ExceptionsStruct> exceptionList, out IEmployees employee)
+    {
+      employee = null;
+      exceptionList = new List<Structures.ExceptionsStruct>();
+      if (!(NamingParameters.ContainsKey(Constants.KeyAttributes.FirstNameRu) &&
+        NamingParameters.ContainsKey(Constants.KeyAttributes.LastNameRu) &&
+        NamingParameters.ContainsKey(Constants.KeyAttributes.MiddleNameRu)))
+      {
+        return false;
+      }
+
+      var firstName = NamingParameters[Constants.KeyAttributes.FirstNameRu];
+      var middleName = NamingParameters[Constants.KeyAttributes.MiddleNameRu];
+      var lastName = NamingParameters[Constants.KeyAttributes.LastNameRu];
+      var email = NamingParameters[Constants.KeyAttributes.Email].Trim().ToLower();
+
+      if (string.IsNullOrWhiteSpace(firstName))
+      {
+        exceptionList.Add(new Structures.ExceptionsStruct
+        {
+          ErrorType = Constants.ErrorTypes.Error,
+          Message = string.Format(Constants.Resources.EmptyColumn, Constants.KeyAttributes.FirstNameRu)
+        });
+        return false;
+      }
+      if (string.IsNullOrWhiteSpace(lastName))
+      {
+        exceptionList.Add(new Structures.ExceptionsStruct
+        {
+          ErrorType = Constants.ErrorTypes.Error,
+          Message = string.Format(Constants.Resources.EmptyColumn, Constants.KeyAttributes.LastNameRu)
+        });
+        return false;
+      }
+
+      var name = string.IsNullOrWhiteSpace(middleName) ? string.Format("{0} {1}", lastName, firstName) : string.Format("{0} {1} {2}", lastName, firstName, middleName);
+      employee = BusinessLogic.GetEntityWithFilter<IEmployees>(x =>(email == "" && x.Name == name) || (email != "" && x.Email.ToLower().Trim() == email), exceptionList, logger);
+
+      if (employee == null)
+      {
+        exceptionList.Add(new Structures.ExceptionsStruct
+        {
+          ErrorType = Constants.ErrorTypes.Error,
+          Message = string.Format(Constants.Resources.ErrorFindEmployee, name)
+        });
+        return false;
+      }
+
+      return true;
     }
   }
 }

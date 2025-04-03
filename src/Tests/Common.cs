@@ -152,6 +152,16 @@ namespace Tests
         /// <param name="expected">Ожидаемый (из xlsx).</param>
         /// <param name="paramName">Имя параметра.</param>
         /// <returns>Строку с ошибкой, если параметры не равны.</returns>
+        public static string CheckParam(double? actual, double? expected, string paramName) => CheckParam(actual.ToString(), expected.ToString(), paramName);
+
+
+        /// <summary>
+        /// Сравнить параметры и получить строку с ошибкой.
+        /// </summary>
+        /// <param name="actual">Актуальный (из системы).</param>
+        /// <param name="expected">Ожидаемый (из xlsx).</param>
+        /// <param name="paramName">Имя параметра.</param>
+        /// <returns>Строку с ошибкой, если параметры не равны.</returns>
         public static string CheckParam(IEntity? actual, string expected, string paramName) => CheckParam(actual == null || string.IsNullOrEmpty(actual.Name) ? string.Empty : actual.Name, expected.Trim(), paramName);
 
         /// <summary>
