@@ -77,7 +77,9 @@ namespace ImportData.IntegrationServicesClient
     public static void CheckConnectionToService(string login, NLog.Logger logger)
     {
       var exceptionList = new List<Structures.ExceptionsStruct>();
-      var userLogin = BusinessLogic.GetEntityWithFilter<IntegrationServicesClient.Models.ILogins>(e => e.LoginName == login, exceptionList, logger);      
+      var userLogin = BusinessLogic.GetEntityWithFilter<IntegrationServicesClient.Models.ILogins>(e => e.LoginName == login, exceptionList, logger);
+      if (userLogin == null)
+        throw new Exception("Не удалось установить подключение к сервису интеграции, проверьте корректность и доступность адреса сервиса интеграции Directum RX, используемый протокол.");
     }
   }
 }
