@@ -6,7 +6,7 @@ namespace ImportData.IntegrationServicesClient.Models
 {
   public class IEntityBase
   {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Поиск сущности для обновления или установки значения свойства в связанную сущность.

@@ -419,7 +419,7 @@ namespace ImportData
     /// <param name="regDate">Дата регистрации.</param>
     /// <param name="logger">Логировщик.</param>
     /// <returns>Список ошибок.</returns>
-    public static IEnumerable<Structures.ExceptionsStruct> RegisterDocument(IOfficialDocuments edoc, int documentRegisterId, string regNumber, DateTimeOffset regDate, Guid defaultRegistrationRoleGuid, Logger logger)
+    public static IEnumerable<Structures.ExceptionsStruct> RegisterDocument(IOfficialDocuments edoc, long documentRegisterId, string regNumber, DateTimeOffset regDate, Guid defaultRegistrationRoleGuid, Logger logger)
     {
       var exceptionList = new List<Structures.ExceptionsStruct>();
 
