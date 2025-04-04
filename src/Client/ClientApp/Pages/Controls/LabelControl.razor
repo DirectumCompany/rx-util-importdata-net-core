@@ -1,0 +1,26 @@
+@* Контрол, представляющий подпись к элементу. *@
+
+@using ClientApp.Models
+
+<MudText Color="Color.Primary" Class=@($"d-inline-flex align-start {this.GetMarginStyle()}") Style="width:200px; margin-left: 20px">
+  @(this.UIVariable.DisplayName)
+</MudText>
+
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  private string GetMarginStyle()
+  {
+    if (this.UIVariable.Control == UIControls.PasswordControl ||
+         this.UIVariable.Control == UIControls.FileControl ||
+         this.UIVariable.Control == UIControls.MultipleFileControl ||
+         this.UIVariable.Control == UIControls.DirectoryControl)
+      return "mt-3";
+
+    return "mt-6";
+  }
+}

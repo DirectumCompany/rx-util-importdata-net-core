@@ -1,0 +1,57 @@
+@* Контрол, представляющий перечисление. *@
+
+@using ClientApp.Models
+@using ClientApp.Services
+@using ClientApp.Store
+@using ClientApp.Utils
+
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+<MudContainer Class="d-flex pa-0 ma-0">
+  <div style="flex: none">
+    <LabelControl UIVariable="@(this.UIVariable)"/>
+  </div>
+
+  @if (!string.IsNullOrEmpty(this.warningText))
+  {
+    <TooltipControl Text="@warningText" UIVariable="UIVariable" TooltipType="TooltipType.Warning"/>
+  }
+  <div style="min-width: 200px">
+    <MudSelect T="string" AnchorOrigin="Origin.BottomCenter" @bind-Value="@(this.UIValue)"
+               Required="@(this.UIVariable.State.IsRequired)" RequiredError="@(this.UIVariable.State.RequiredError)"
+               HelperText="@(this.UIVariable.Description)" Style="margin-top: 3px">
+      @foreach (var (key, value) in this.UIVariable.EnumValues)
+      {
+        <MudSelectItem Value="@value"> @key</MudSelectItem>
+      }
+    </MudSelect>
+  </div>
+</MudContainer>
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  [Parameter]
+  public string warningText { get; set; }
+
+  private string UIValue
+  {
+    get => this.UIVariable.Value?.ToString();
+    set
+    {
+      this.UIVariable.Value = value;
+      this.refreshService.CallRequestRefresh();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    this.UIVariable.Value = EnumUtils.CoerceValue(this.UIVariable.EnumValues, this.UIVariable.Value?.ToString());
+    base.OnInitialized();
+  }
+
+}

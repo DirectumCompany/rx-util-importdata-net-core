@@ -1,0 +1,28 @@
+@* Домашняя страница. *@
+
+@page "/"
+@using ClientApp.Services
+@using ClientApp.Store
+@using ClientApp.Models
+
+@inject NavigationManager ClientNavigationManager
+
+@inject InstallStore installStore
+
+<PageTitle>@installStore.Title</PageTitle>
+
+@code {
+  private bool shouldRender;
+
+  /// <inheritdoc />
+  protected override bool ShouldRender() => this.shouldRender;
+
+  /// <inheritdoc />
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+    this.installStore.SetTitle();
+    this.shouldRender = true;
+    this.ClientNavigationManager.NavigateTo($"{this.ClientNavigationManager.BaseUri}import");
+  }
+}

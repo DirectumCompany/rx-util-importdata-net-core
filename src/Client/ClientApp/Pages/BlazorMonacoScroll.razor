@@ -1,0 +1,107 @@
+@* Контрол для автоматического скроллирования контента. *@
+
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using ClientApp.Models
+
+<div style="height: @(Height)px; position: relative;">
+  <StandaloneCodeEditor @ref="@(this.monacoEditor)"
+                ConstructionOptions="this.EditorConstructionOptions" CssClass="monaco-editor-scroll"
+                OnDidScrollChange="OnScrollChange" OnDidChangeModelContent="OnContentChange"
+                OnDidInit="EditorOnDidInit"/>
+</div>
+
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public double Height { get; set; }
+
+  [Parameter]
+  public bool IsAutoScroll { get; set; } = true;
+
+  [Parameter]
+  public string Text { get; set; }
+
+  private StandaloneCodeEditor monacoEditor;
+
+  private const double gluingBottomValue = 1.1;
+
+  private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+  {
+    return new StandaloneEditorConstructionOptions
+    {
+      AutomaticLayout = true,
+      ScrollBeyondLastLine = false,
+      ReadOnly = true,
+      LineNumbers = "false",
+      WordWrap = "on",
+      Scrollbar = new EditorScrollbarOptions()
+      {
+        Horizontal = "hidden"
+      },
+      RenderLineHighlightOnlyWhenFocus = false,
+      HideCursorInOverviewRuler = true,
+      OverviewRulerLanes = 0,
+      Contextmenu = false,
+      SelectionHighlight = false
+    };
+  }
+
+  protected override void OnParametersSet()
+  {
+    base.OnParametersSet();
+
+    monacoEditor?.SetValue(Text);
+  }
+
+  private async void ScrollToBottom()
+  {
+    var model = await monacoEditor.GetModel();
+    var countLines = await model.GetLineCount();
+    await monacoEditor.RevealLine(countLines, ScrollType.Smooth);
+  }
+
+  private async void OnScrollChange(ScrollEvent e)
+  {
+    var contentHeight = await monacoEditor.GetContentHeight();
+    IsAutoScroll = e.ScrollTop + gluingBottomValue * Height >= contentHeight;
+  }
+
+  private void OnContentChange(ModelContentChangedEvent obj)
+  {
+    if (IsAutoScroll)
+    {
+      ScrollToBottom();
+    }
+  }
+
+  private async Task EditorOnDidInit()
+  {
+#pragma warning disable CS0618
+    await Global.DefineTheme("my-custom-theme", new StandaloneThemeData
+#pragma warning restore CS0618
+    {
+      Base = "vs-dark",
+      Inherit = true,
+      Rules = new List<TokenThemeRule>
+      {
+        new TokenThemeRule { Background = "e2e2e2", Foreground = "444444" }
+      },
+      Colors = new Dictionary<string, string>
+      {
+        ["editor.background"] = "#e2e2e2",
+        ["editorCursor.foreground"] = "#444444",
+        ["editor.lineHighlightBackground"] = "#00000000",
+        ["editor.lineHighlightBorder"] = "#00000000",
+        ["editor.selectionBackground"] = "#88000030",
+        ["editor.inactiveSelectionBackground"] = "#88000015",
+        ["scrollbar.shadow"] = "#00000000"
+      }
+    });
+    await monacoEditor.UpdateOptions(new EditorUpdateOptions() {Theme = "my-custom-theme"});
+    await monacoEditor?.SetValue(Text)!;
+  }
+
+}

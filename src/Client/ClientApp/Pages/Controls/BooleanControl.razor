@@ -1,0 +1,37 @@
+@* Контрол, представляющий логическое значение. *@
+
+@using ClientApp.Models
+@using ClientApp.Services
+@using ClientApp.Store
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+  <MudCheckBox @ref="@(this.checkBox)"
+               @bind-Checked="this.UIValue"
+                 Required="@(this.UIVariable.State.IsRequired)" RequiredError="@(this.UIVariable.State.RequiredError)" Dense="true" Style="margin-left:220px"
+                 Label="@(this.UIVariable.DisplayName)" Class="d-inline-flex align-self-end mt-3" Color="@(this.GetColor())" />
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  private Color GetColor()
+  {
+    return this.checkBox?.HasErrors ?? false ? Color.Error : Color.Primary;
+  }
+
+  MudCheckBox<bool> checkBox;
+
+  private bool UIValue
+  {
+    get => Convert.ToBoolean(this.UIVariable.Value?.ToString());
+
+    set
+    {
+      this.UIVariable.Value = value.ToString().ToLower();
+      this.refreshService.CallRequestRefresh();
+    }
+  }
+}

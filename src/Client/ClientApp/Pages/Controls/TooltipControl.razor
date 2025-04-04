@@ -1,0 +1,41 @@
+﻿@* Контрол, представляющий всплывающую подсказку. *@
+
+@using ClientApp.Models
+
+<MudTooltip>
+  <ChildContent>
+    <MudIcon Icon="@GetIcon()" Color="@GetColor()" Class="@(this.ClassStyle())" />
+  </ChildContent>
+  <TooltipContent>
+    <MudText Typo="Typo.body2" Style="white-space: pre-wrap">@Text</MudText>
+  </TooltipContent>
+</MudTooltip>
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  [Parameter]
+  public string Text { get; set; } = "";
+
+  [Parameter]
+  public TooltipType TooltipType { get; set; }
+
+  private string ClassStyle()
+  {
+    return string.IsNullOrEmpty(this.UIVariable?.Description) ? $"d-flex align-center mt-6 mr-1" : $"d-flex align-center mt-3 mr-1";
+  }
+
+  private string GetIcon()
+  {
+    return this.TooltipType == TooltipType.Info ? Icons.Material.Filled.Info : Icons.Material.Filled.Warning;
+  }
+
+  private Color GetColor()
+  {
+    return this.TooltipType == TooltipType.Info ? Color.Info : Color.Warning;
+  }
+
+}

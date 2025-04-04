@@ -1,0 +1,52 @@
+@* Контрол для отрисовки типизированного контрола. *@
+
+@using ClientApp.Models
+@using System.Reflection.Metadata
+
+@if (this.UIVariable.Control == UIControls.BooleanControl)
+{
+  <BooleanControl UIVariable="@(this.UIVariable)"/>
+}
+else if (this.UIVariable.Control == UIControls.PasswordControl)
+{
+  <PasswordControl UIVariable="@(this.UIVariable)"/>
+}
+else if (this.UIVariable.Control == UIControls.EnumControl)
+{
+  <EnumControl UIVariable="@(this.UIVariable)"/>
+}
+else if (this.UIVariable.Control == UIControls.DirectoryControl)
+{
+  <DirectoryControl UIVariable="@(this.UIVariable)"/>
+}
+else if (this.UIVariable.Control == UIControls.FileControl)
+{
+  <FileControl UIVariable="@(this.UIVariable)" />
+}
+else if (this.UIVariable.Control == UIControls.MultipleFileControl)
+{
+  <MultipleFileControl UIVariable="@(this.UIVariable)" />
+}
+else if (this.UIVariable.Control == UIControls.GroupHeaderControl)
+{
+  <GroupHeaderControl UIVariable="@(this.UIVariable)" />
+}
+else if (this.UIVariable.Control == UIControls.StringControl)
+{
+  <StringControl UIVariable="@(this.UIVariable)" />
+}
+else if (this.UIVariable.Control == UIControls.EmptyControl)
+{
+  <div></div>
+}
+else
+{
+  <StringControl UIVariable="@(this.UIVariable)" />
+}
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+}

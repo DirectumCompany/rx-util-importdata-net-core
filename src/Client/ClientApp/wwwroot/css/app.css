@@ -1,0 +1,4 @@
+.required .mud-typography::before {
+  content: "*";
+  color: red;
+}

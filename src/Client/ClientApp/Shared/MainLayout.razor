@@ -1,0 +1,50 @@
+@* Компонент макета приложения. *@
+@using ClientApp.Store
+@inherits LayoutComponentBase
+@inject InstallStore installStore
+@inject NavigationManager ClientNavigationManager
+
+<MudThemeProvider Theme="this.currentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<PageTitle>@installStore.Title</PageTitle>
+<MudLayout>
+  <MudMainContent Class="pa-0">
+    @if (ClientNavigationManager.Uri == $"{ClientNavigationManager.BaseUri}login")
+    {
+      @Body
+    }
+    else
+    {
+      <MudPaper Elevation="0" Class="d-flex align-stretch" Style="@this.installStore.Style()">
+        <LeftPanel/>
+        @Body
+      </MudPaper>
+    }
+  </MudMainContent>
+</MudLayout>
+
+@code{
+
+  private readonly MudTheme currentTheme = new()
+  {
+    Palette = new PaletteLight()
+    {
+      Primary = "#0054A0",
+      Secondary = "#FFFFFF"
+    },
+    Typography = new Typography
+    {
+      // Подписи для Labels у контролей.
+      Body1 = new Body1
+      {
+        FontFamily = new[] { "Segoe UI" },
+        FontWeight = 400,
+        FontSize  = "1rem",
+        LineHeight = 1,
+        LetterSpacing = ".00938em"
+      }
+    }
+  };
+}

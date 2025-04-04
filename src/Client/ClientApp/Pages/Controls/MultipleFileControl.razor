@@ -1,0 +1,65 @@
+@* Контрол, представляющий пути до нескольких файлов. *@
+
+@using ClientApp.Models
+@using ClientApp.Services
+@using ClientApp.Store
+@using Utils;
+@using System.Runtime.CompilerServices
+
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+
+@for(int i = 0; i < controlList.Count; i++)
+{
+  int local = i;
+  <MudContainer Class="d-flex pa-0 ma-0" >
+    <LabelControl UIVariable=@(this.UIVariable) />
+    <MudTextField T="string" Class="d-inline-flex" Margin="Margin.Dense" @bind-Value="controlList[local]" Style="margin-top: 3px"
+                  HelperText="@(this.UIVariable.Description)"
+                  Required="@(this.UIVariable.State.IsRequired)" RequiredError="@(this.UIVariable.State.RequiredError)"/>
+    @if (local + 1 == controlList.Count)
+    {
+      <MudIconButton Color="Color.Success" Size="Size.Medium" Icon="@Icons.Material.Filled.Add"
+                     OnClick="AddControl" Class="mt-2 mb-3"></MudIconButton>
+    }
+    <MudIconButton Color="Color.Default" Size="Size.Medium" Icon="@Icons.Material.Filled.Delete"
+                   OnClick="() => DeleteControl(local)" Class="mt-2 mb-3"></MudIconButton>
+  </MudContainer>
+}
+
+@code {
+#pragma warning disable CS1591
+
+  const string Separator = ";";
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  private List<string> controlList = new();
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    controlList = this.UIVariable.Value?.ToString()?.Split(Separator).ToList();
+  }
+
+  protected override void OnAfterRender(bool firstRender)
+  {
+    base.OnAfterRender(firstRender);
+    UIVariable.Value = StringUtils.DirListToString(controlList, Separator);
+  }
+
+  private void AddControl()
+  {
+    controlList.Add("");
+    this.refreshService.CallRequestRefresh();
+  }
+
+  private void DeleteControl(int number)
+  {
+    if (controlList.Count > 1)
+      controlList.RemoveAt(number);
+    this.refreshService.CallRequestRefresh();
+  }
+}
