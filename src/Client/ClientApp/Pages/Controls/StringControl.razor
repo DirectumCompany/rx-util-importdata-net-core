@@ -1,0 +1,32 @@
+@* Контрол, представляющий строковое значение. *@
+
+@using ClientApp.Models
+@using ClientApp.Services
+@using ClientApp.Store
+
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+<MudContainer Class="d-flex pa-0 ma-0" Style="height:56px;">
+  <LabelControl UIVariable="@(this.UIVariable)" />
+  <MudTextField T="string" Class="d-inline-flex" Margin="Margin.Dense" @bind-Value="this.UIValue" Style="margin-top: 3px"
+                HelperText="@(this.UIVariable.Description)"
+                Required="@(this.UIVariable.State.IsRequired)" RequiredError="@(this.UIVariable.State.RequiredError)"/>
+</MudContainer>
+
+@code {
+  #pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  protected virtual string UIValue
+  {
+    get => this.UIVariable.Value?.ToString();
+    set
+    {
+      this.UIVariable.Value = value;
+      this.refreshService.CallRequestRefresh();
+    }
+  }
+}

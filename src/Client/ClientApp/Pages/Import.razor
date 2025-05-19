@@ -1,0 +1,123 @@
+﻿@* Страница ui-инсталлятора. *@
+
+@page "/import"
+
+@inject IRefreshService refreshService
+@inject InstallStore installStore
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager ClientNavigationManager
+
+@using ClientApp.Services
+@using ClientApp.Store
+@using ClientApp.Models
+@using System.Diagnostics
+@inherits PerformanceRenderTimer
+
+<MudPaper Class="ma-4" Elevation="0" MinWidth="1110px" Width="min-content">
+	<MudCard Outlined="true" Style="@this.installStore.ContentStyle()">
+		<MudCardContent>
+			<MudForm @ref="@(this.form)">
+				@* Тут рисуются контролы.*@
+				<UIVariablesView/>
+			</MudForm>
+		</MudCardContent>
+
+		<MudCard Outlined="true" Style="@this.installStore.ContentStyle()">
+		  <MudExpansionPanel DisableGutters="true" Dense="true">
+        <TitleContent>
+          <div class="d-flex">
+					  @if (isImportActive)
+					  {
+						  <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true"/>
+					  }
+					  <MudGrid>
+              <MudItem xs="9">
+                <MudText Style="margin-left:10px">@(this.installStore.Messages.ImportInfo)</MudText>
+              </MudItem>
+            </MudGrid>
+					</div>
+				</TitleContent>
+        <ChildContent>
+          <BlazorMonacoScroll Height="300" Text="@(string.Join(Environment.NewLine, this.installStore.ImportOutputdata))"></BlazorMonacoScroll>
+        </ChildContent>
+      </MudExpansionPanel>
+		</MudCard>
+	</MudCard>
+	<MudCardActions Style="align-items:flex-start">
+		<MudButton Variant="Variant.Filled" Class="btn_install" Color="Color.Primary" Style="margin-left: 95px;flex-shrink:0;text-transform: none;"
+							 Disabled="@(isImportActive)" OnClick="@(this.ExecuteImport)">@(this.installStore.Messages.ImportButton)</MudButton>
+	</MudCardActions>
+</MudPaper>
+
+@code {
+	#pragma warning disable CS1591
+
+	MudForm form;
+	private MudForm GetForm()
+	{
+		return this.form;
+	}
+	bool isImportActive = false;
+
+	private async Task ExecuteImport()
+	{
+		await form.Validate();
+
+		if (!form.IsValid)
+			return;
+
+		if (isImportActive)
+			return;
+
+		this.installStore.ImportOutputdata.Clear();
+
+		var arguments = installStore.CreateArguments();
+		await this.installStore.Import(arguments);
+		isImportActive = await installStore.IsImportActive();
+		await UpdateForm();
+		this.StateHasChanged();
+	}
+
+	private async Task UpdateForm()
+	{
+		while (isImportActive)
+		{
+			await installStore.GetOutputData();
+			await Task.Delay(1000);
+			this.StateHasChanged();
+			isImportActive = await installStore.IsImportActive();
+		}
+		await installStore.GetOutputData();
+		this.refreshService.CallUIConfigureRequestRefresh();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		this.installStore.SetTitle();
+		this.RefreshServiceOnReloadRequested();
+		this.refreshService.RefreshRequested += this.RefreshMe;
+	}
+
+	private void RefreshServiceOnReloadRequested()
+	{
+		using var timer = new PerformanceTimer(nameof(RefreshServiceOnReloadRequested));
+		this.installStore.GetUIVariables();
+		this.refreshService.CallRequestRefresh();
+		this.StateHasChanged();
+	}
+
+	private void RefreshMe()
+	{
+		Console.WriteLine("Refresh form.");
+		this.StateHasChanged();
+	}
+
+	private void SetValidationInProgressAndRefresh(bool validationInProgress)
+	{
+		this.installStore.ValidationInProgress = validationInProgress;
+		this.refreshService.CallRequestRefresh();
+	}
+
+}

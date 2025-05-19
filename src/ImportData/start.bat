@@ -1,0 +1,2 @@
+cd .\ImportDataUI
+.\ImportUtilServer.exe

@@ -1,0 +1,42 @@
+@* Контрол, представляющий информацию о компоненте. *@
+
+@using ClientApp.Models
+@using ClientApp.Services
+@using ClientApp.Store
+@using Newtonsoft.Json.Linq
+
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+<MudAlert Severity="Severity.Warning" Dense="true" NoIcon="true" Style="height: 55px">
+  <MudText Color="Color.Primary" Typo="Typo.subtitle1" Inline="true" Class="d-inline-flex align-start"><b>@(this.UIVariable.DisplayName)</b></MudText>
+</MudAlert>
+
+<style>
+.mud-timeline-horizontal .mud-timeline-item .mud-timeline-item-divider { min-height: 66px;}
+.mud-timeline-horizontal.mud-timeline-position-bottom .mud-timeline-item {height: 40px;}
+.mud-timeline-horizontal.mud-timeline-position-bottom::before { bottom: 5px;}
+.mud-timeline-horizontal.mud-timeline-position-top .mud-timeline-item-content, .mud-timeline-horizontal.mud-timeline-position-bottom .mud-timeline-item-content {
+    height: 20px;
+    text-align: center;
+    width: 80px;}
+</style>
+
+@code {
+#pragma warning disable CS1591
+
+  [Parameter]
+  public UIVariable UIVariable { get; set; }
+
+  private bool UIValue
+  {
+    get => Convert.ToBoolean(this.UIVariable.Value?.ToString());
+
+    set
+    {
+      this.UIVariable.Value = value.ToString().ToLower();
+      this.refreshService.CallRequestRefresh();
+    }
+  }
+
+}

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorMonaco" Version="3.1.0" />
+    <PackageReference Include="BlushingPenguin.JsonPath" Version="1.0.6" />
+    <PackageReference Include="JsonPathExpressions" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.9" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.11.0" />
+    <PackageReference Include="NJsonSchema" Version="10.9.0" />
+    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="10.9.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="YamlDotNet" Version="13.2.0" />
+  </ItemGroup>
+</Project>

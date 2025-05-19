@@ -24,6 +24,17 @@
     <None Update="_ConfigSettings.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="start.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
+  <Target Name="CopyUI" AfterTargets="Build" >
+    <PropertyGroup>
+      <ImportDataUIPath>..\Client\ImportUtilServer</ImportDataUIPath>
+      <ImportDataUIPublishOutputPath>$(MSBuildProjectDirectory)\$(OutputPath)ImportDataUI</ImportDataUIPublishOutputPath>
+    </PropertyGroup>
+    <MSBuild Projects="$(ImportDataUIPath)\ImportUtilServer.csproj" Targets="Publish" 
+             Properties="Configuration=Release;PublishDir=$(ImportDataUIPublishOutputPath)" />
+  </Target>
 </Project>
