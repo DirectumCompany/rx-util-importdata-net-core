@@ -58,7 +58,7 @@ namespace Tests.EDocs
       var name = Common.GetDocumentName(parameters[shift + 3], parameters[shift + 0], parameters[shift + 1], parameters[shift + 4]);
 
       if (actualOutgoingLetter == null)
-        return $"Не найдено входящее письмо: {name}";
+        return $"Не найдено исходящее письмо: {name}";
 
       var errorList = new List<string>
             {
