@@ -18,6 +18,10 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Должность", RequiredType.NotRequired, PropertyType.EntityWithCreate, AdditionalCharacters.CreateFromOtherProperties)]
     public IJobTitles JobTitle { get; set; }
 
+    [PropertyOptions("ИД во внешней системе", RequiredType.NotRequired, PropertyType.Simple)]
+    public string ExternalId { get; set; }
+
+
     new public static IEntity FindEntity(Dictionary<string, string> propertiesForSearch, Entity entity, bool isEntityForUpdate, List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       var name = propertiesForSearch.ContainsKey(Constants.KeyAttributes.CustomFieldName) ?

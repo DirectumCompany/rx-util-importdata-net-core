@@ -55,7 +55,8 @@ namespace Tests.Databooks
                 Common.CheckParam(actualPerson.Homepage, parameters[shift + 13], "Homepage"),
                 Common.CheckParam(actualPerson.Bank, parameters[shift + 14], "Bank"),
                 Common.CheckParam(actualPerson.Account, parameters[shift + 15], "Account"),
-                Common.CheckParam(actualPerson.Note, parameters[shift + 16], "Note")
+                Common.CheckParam(actualPerson.Note, parameters[shift + 16], "Note"),
+                Common.CheckParam(actualPerson.ExternalId, parameters[shift + 17], "ExternalId")
             };
 
             errorList = errorList.Where(x => !string.IsNullOrEmpty(x)).ToList();

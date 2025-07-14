@@ -27,6 +27,9 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Руководитель", RequiredType.NotRequired, PropertyType.EntityWithCreate, AdditionalCharacters.ForSearch)]
     public IEmployees Manager { get; set; }
 
+    [PropertyOptions("ИД во внешней системе", RequiredType.NotRequired, PropertyType.Simple)]
+    public string ExternalId { get; set; }
+
     new public static IDepartments CreateEntity(Dictionary<string, string> propertiesForSearch, Entity entity, List<Structures.ExceptionsStruct> exceptionList, bool isBatch, NLog.Logger logger)
     {
       var name = propertiesForSearch[Constants.KeyAttributes.CustomFieldName];

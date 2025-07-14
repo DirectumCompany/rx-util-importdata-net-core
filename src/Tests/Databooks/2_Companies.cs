@@ -62,7 +62,8 @@ namespace Tests.Databooks
                 Common.CheckParam(actualCompany.Note, parameters[shift + 16], "Note"),
                 Common.CheckParam(actualCompany.Account, parameters[shift + 17], "Account"),
                 Common.CheckParam(actualCompany.Bank?.Name.ToLower(), parameters[shift + 18].ToLower(), "Bank"),
-                Common.CheckParam(actualCompany.Responsible, parameters[shift + 19], "Responsible")
+                Common.CheckParam(actualCompany.Responsible, parameters[shift + 19], "Responsible"),
+                Common.CheckParam(actualCompany.ExternalId, parameters[shift + 20], "ExternalId")
             };
 
             errorList = errorList.Where(x => !string.IsNullOrEmpty(x)).ToList();
