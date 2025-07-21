@@ -30,7 +30,7 @@ namespace ImportData.IntegrationServicesClient.Models
       var email = propertiesForSearch.ContainsKey(Constants.KeyAttributes.Email) ?
         propertiesForSearch[Constants.KeyAttributes.Email] : string.Empty;
 
-      return BusinessLogic.GetEntityWithFilter<IEmployees>(x => (email == "" && x.Name == name) || (email != "" && x.Email.ToLower().Trim() == name), exceptionList, logger);
+      return BusinessLogic.GetEntityWithFilter<IEmployees>(x => (email == "" && x.Name == name) || (email != "" && x.Email.ToLower().Trim() == email), exceptionList, logger);
     }
 
     new public static IEntity CreateEntity(Dictionary<string, string> propertiesForSearch, Entity entity, List<Structures.ExceptionsStruct> exceptionList, bool isBatch, NLog.Logger logger)
