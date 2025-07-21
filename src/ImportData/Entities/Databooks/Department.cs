@@ -8,7 +8,7 @@ namespace ImportData
 {
   class Department : Entity
   {
-    public override int PropertiesCount { get { return 8; } }
+    public override int PropertiesCount { get { return 9; } }
     protected override Type EntityType { get { return typeof(IDepartments); } }
 
     protected override string GetName()

@@ -65,6 +65,9 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Банк", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
     public IBanks Bank { get; set; }
 
+    [PropertyOptions("ИД во внешней системе", RequiredType.NotRequired, PropertyType.Simple)]
+    public string ExternalId { get; set; }
+
     new public static IBusinessUnits CreateEntity(Dictionary<string, string> propertiesForSearch, Entity entity, List<Structures.ExceptionsStruct> exceptionList, bool isBatch, NLog.Logger logger)
     {
       var name = propertiesForSearch.ContainsKey(Constants.KeyAttributes.CustomFieldName) ?

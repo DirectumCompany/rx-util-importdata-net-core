@@ -9,7 +9,7 @@ namespace ImportData
 {
   class Person : Entity
   {
-    public override int PropertiesCount { get { return 17; } }
+    public override int PropertiesCount { get { return 18; } }
     protected override Type EntityType { get { return typeof(IPersons); } }
 
     protected override string GetName()

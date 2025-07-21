@@ -8,7 +8,7 @@ namespace ImportData
 {
   class Company : Entity
   {
-    public override int PropertiesCount { get { return 20; } }
+    public override int PropertiesCount { get { return 21; } }
     protected override Type EntityType { get { return typeof(ICompanies); } }
 
     protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)

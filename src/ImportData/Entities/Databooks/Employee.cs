@@ -7,7 +7,7 @@ namespace ImportData
 {
   class Employee : Entity
   {
-    public override int PropertiesCount { get { return 20; } }
+    public override int PropertiesCount { get { return 21; } }
     protected override Type EntityType { get { return typeof(IEmployees); } }
 
     protected override string GetName()
