@@ -34,7 +34,7 @@ namespace ImportUtilServer.Models
                     using Process process = new(); 
                     process.StartInfo.FileName = RuntimeInformation
                         .IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
-                    process.StartInfo.Arguments = $"{utilPath} {arguments}";
+                    process.StartInfo.Arguments = $"\"{utilPath}\" {arguments}";
                     process.StartInfo.CreateNoWindow = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
