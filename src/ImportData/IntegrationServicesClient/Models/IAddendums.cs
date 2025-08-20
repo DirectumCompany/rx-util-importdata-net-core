@@ -13,10 +13,10 @@ namespace ImportData.IntegrationServicesClient.Models
     private DateTimeOffset? registrationDate;
     private DateTimeOffset? documentDate;
 
-    [PropertyOptions("Рег. №", RequiredType.NotRequired, PropertyType.Simple, AdditionalCharacters.ForSearch)]
+    [PropertyOptions("Рег. № приложения", RequiredType.NotRequired, PropertyType.Simple, AdditionalCharacters.ForSearch)]
     new public string RegistrationNumber { get; set; }
 
-    [PropertyOptions("Дата регистрации", RequiredType.NotRequired, PropertyType.Simple, AdditionalCharacters.ForSearch)]
+    [PropertyOptions("Дата регистрации приложения", RequiredType.NotRequired, PropertyType.Simple, AdditionalCharacters.ForSearch)]
     new public DateTimeOffset? RegistrationDate
     {
       get { return registrationDate; }
@@ -33,7 +33,7 @@ namespace ImportData.IntegrationServicesClient.Models
       set { documentDate = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
     }
 
-    [PropertyOptions("Журнал регистрации", RequiredType.Required, PropertyType.Entity, AdditionalCharacters.ForSearch)]
+    [PropertyOptions("Журнал регистрации приложения", RequiredType.NotRequired, PropertyType.Entity, AdditionalCharacters.ForSearch)]
     new public IDocumentRegisters DocumentRegister { get; set; }
 
     [PropertyOptions("Регистрация", RequiredType.NotRequired, PropertyType.Simple)]
