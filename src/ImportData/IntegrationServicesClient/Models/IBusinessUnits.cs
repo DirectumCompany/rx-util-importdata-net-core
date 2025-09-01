@@ -62,7 +62,7 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Регион", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
     public IRegions Region { get; set; }
 
-    [PropertyOptions("Банк", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
+    [PropertyOptions("Банк", RequiredType.NotRequired, PropertyType.Entity)]
     public IBanks Bank { get; set; }
 
     [PropertyOptions("ИД во внешней системе", RequiredType.NotRequired, PropertyType.Simple)]
