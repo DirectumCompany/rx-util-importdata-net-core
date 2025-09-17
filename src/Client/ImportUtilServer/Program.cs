@@ -40,7 +40,15 @@ var runningApp = app.RunAsync();
 if (!app.Environment.IsDevelopment())
 {
     var url = app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
-    if (url != null)
-        Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+    try
+    {
+        if (url != null)
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Ошибка запуска браузера: " + ex.Message);
+        Console.WriteLine("Пожалуйста, откройте следующий URL в вашем браузере: " + url);
+    }
 }
 await runningApp;
