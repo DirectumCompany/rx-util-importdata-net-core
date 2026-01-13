@@ -1,0 +1,42 @@
+﻿@* Контрол для отрисовки типизированных контролов. *@
+
+
+@using ClientApp.Services
+@using ClientApp.Models
+@using ClientApp.Store
+
+@inject InstallStore installStore
+@inject IRefreshService refreshService
+
+@foreach (var uiVariable in this.installStore.UIVariables)
+{
+    //if (new ControlState(this.installStore.UIVariables, uiVariable).IsControlHidden()
+    //|| new ControlState(this.installStore.UIVariables, uiVariable).IsControlHiddenFromGroupCheckbox())
+    //continue;
+
+  <div class="form-group">
+      <UIVariableControl UIVariable=@uiVariable />
+  </div>
+}
+
+@code {
+
+  /// <inheritdoc />
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    this.RefreshServiceOnRefreshRequested();
+    this.refreshService.RefreshRequested += this.RefreshServiceOnRefreshRequested;
+  }
+
+  private void RefreshServiceOnRefreshRequested()
+  {
+    this.StateHasChanged();
+  }
+
+  private string GetDependencyTooltipText(UIVariable uiVariable)
+  {
+    return string.Format(this.installStore.Messages.ChangeBlocked, uiVariable.DisplayName ?? string.Empty);
+  }
+
+}

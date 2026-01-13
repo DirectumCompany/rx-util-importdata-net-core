@@ -10,7 +10,7 @@
 /src/ImportData/Properties/PublishProfiles
 /src/ImportData/ImportData.csproj.user
 /.vs/ImportData/
-
+**/.idea/**
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

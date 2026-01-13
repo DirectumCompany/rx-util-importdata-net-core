@@ -87,6 +87,7 @@ namespace Tests.Databooks
         Common.CheckParam(actualPerson.Bank?.Name.ToLower(), parameters[shift + 17].ToLower(), "Bank"),
         Common.CheckParam(actualPerson.Account, parameters[shift + 18], "Account"),
         Common.CheckParam(actualEmployee.Note, parameters[shift + 19], "Note"),
+        Common.CheckParam(actualEmployee.ExternalId, parameters[shift + 20], "ExternalId"),
 
         Common.CheckParam(actualEmployee.NeedNotifyExpiredAssignments != null ? actualEmployee.NeedNotifyExpiredAssignments.ToString() : (false).ToString(),
           string.IsNullOrEmpty(parameters[shift + 15]) ? (false).ToString() : (true).ToString(), "NeedNotifyExpiredAssignments"),
@@ -133,7 +134,8 @@ namespace Tests.Databooks
                 Common.CheckParam(actualBusinessUnit.Homepage, parameters[shift + 16], "Homepage"),
                 Common.CheckParam(actualBusinessUnit.Note, parameters[shift + 17], "Note"),
                 Common.CheckParam(actualBusinessUnit.Account, parameters[shift + 18], "Account"),
-                Common.CheckParam(actualBusinessUnit.Bank, parameters[shift + 19], "Bank")
+                Common.CheckParam(actualBusinessUnit.Bank, parameters[shift + 19], "Bank"),
+                Common.CheckParam(actualBusinessUnit.ExternalId, parameters[shift + 20], "ExternalId")
             };
 
       errorList = errorList.Where(x => !string.IsNullOrEmpty(x)).ToList();
@@ -161,7 +163,8 @@ namespace Tests.Databooks
                 Common.CheckParam(actualDepartment.HeadOffice, parameters[shift + 4], "HeadOffice"),
                 Common.CheckParam(actualDepartment.Manager , parameters[shift + 5], "Manager"),
                 Common.CheckParam(actualDepartment.Phone, parameters[shift + 6], "Phone"),
-                Common.CheckParam(actualDepartment.Note, parameters[shift + 7], "Note")
+                Common.CheckParam(actualDepartment.Note, parameters[shift + 7], "Note"),
+                Common.CheckParam(actualDepartment.ExternalId, parameters[shift + 8], "ExternalId")
             };
 
       errorList = errorList.Where(x => !string.IsNullOrEmpty(x)).ToList();

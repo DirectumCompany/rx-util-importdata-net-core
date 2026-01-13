@@ -1,0 +1,23 @@
+@* Контрол, представляющий путь до файла. *@
+
+@using ClientApp.Services
+@inherits StringControl;
+
+@inject IRefreshService refreshService
+
+@RenderBase()
+
+@code {
+#pragma warning disable CS1591
+
+  RenderFragment RenderBase() => builder => base.BuildRenderTree(builder);
+  protected override string UIValue
+  {
+    get => this.UIVariable.Value?.ToString();
+    set
+    {
+      this.UIVariable.Value =  value?.TrimEnd('/', '\\');
+      this.refreshService.CallRequestRefresh();
+    }
+  }
+}

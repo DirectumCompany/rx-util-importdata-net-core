@@ -53,7 +53,7 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Головная орг.", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
     public IBusinessUnits HeadCompany { get; set; }
 
-    [PropertyOptions("Руководитель", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
+    [PropertyOptions("Руководитель", RequiredType.NotRequired, PropertyType.EntityWithCreate, AdditionalCharacters.ForSearch)]
     public IEmployees CEO { get; set; }
 
     [PropertyOptions("Населенный пункт", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
@@ -62,8 +62,11 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Регион", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
     public IRegions Region { get; set; }
 
-    [PropertyOptions("Банк", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
+    [PropertyOptions("Банк", RequiredType.NotRequired, PropertyType.Entity)]
     public IBanks Bank { get; set; }
+
+    [PropertyOptions("ИД во внешней системе", RequiredType.NotRequired, PropertyType.Simple)]
+    public string ExternalId { get; set; }
 
     new public static IBusinessUnits CreateEntity(Dictionary<string, string> propertiesForSearch, Entity entity, List<Structures.ExceptionsStruct> exceptionList, bool isBatch, NLog.Logger logger)
     {
