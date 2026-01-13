@@ -53,7 +53,7 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Головная орг.", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
     public IBusinessUnits HeadCompany { get; set; }
 
-    [PropertyOptions("Руководитель", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
+    [PropertyOptions("Руководитель", RequiredType.NotRequired, PropertyType.EntityWithCreate, AdditionalCharacters.ForSearch)]
     public IEmployees CEO { get; set; }
 
     [PropertyOptions("Населенный пункт", RequiredType.NotRequired, PropertyType.EntityWithCreate)]
