@@ -23,6 +23,12 @@ namespace ImportData.IntegrationServicesClient.Models
     [PropertyOptions("Табельный номер", RequiredType.NotRequired, PropertyType.Simple)]
     public string PersonnelNumber { get; set; }
 
+    [PropertyOptions("Вид занятости", RequiredType.NotRequired, PropertyType.Simple)]
+    public string EmploymentType { get; set; }
+
+    [PropertyOptions("Личный телефон", RequiredType.NotRequired, PropertyType.Simple)]
+    public string PersonalPhoneDirRX { get; set; }
+    
     new public static IEntity FindEntity(Dictionary<string, string> propertiesForSearch, Entity entity, bool isEntityForUpdate, List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       var name = propertiesForSearch.ContainsKey(Constants.KeyAttributes.CustomFieldName) ?

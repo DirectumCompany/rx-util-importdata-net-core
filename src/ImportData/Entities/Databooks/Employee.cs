@@ -7,7 +7,7 @@ namespace ImportData
 {
   class Employee : Entity
   {
-    public override int PropertiesCount { get { return 21; } }
+    public override int PropertiesCount { get { return 23; } }
     protected override Type EntityType { get { return typeof(IEmployees); } }
 
     protected override string GetName()
@@ -24,6 +24,7 @@ namespace ImportData
       ResultValues[Constants.KeyAttributes.NeedNotifyNewAssignments] = !string.IsNullOrEmpty((string)ResultValues[Constants.KeyAttributes.Email]);
       ResultValues[Constants.KeyAttributes.NeedNotifyAssignmentsSummary] = !string.IsNullOrEmpty((string)ResultValues[Constants.KeyAttributes.Email]);
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
+      ResultValues[Constants.KeyAttributes.EmploymentType] = BusinessLogic.GetEmploymentType((string)ResultValues[Constants.KeyAttributes.EmploymentType]);
 
       return false;
     }

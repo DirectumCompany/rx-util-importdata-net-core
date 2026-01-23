@@ -8,6 +8,10 @@ namespace ImportData.IntegrationServicesClient.Models
   {
     private DateTimeOffset? dateOfBirth;
 
+    private DateTimeOffset? identityDocumentIssueDate;
+
+    private DateTimeOffset? identityDocumentExpirationDate;
+
     [PropertyOptions("Фамилия", RequiredType.Required, PropertyType.Simple, AdditionalCharacters.ForSearch)]
     public string LastName { get; set; }
 
@@ -31,6 +35,38 @@ namespace ImportData.IntegrationServicesClient.Models
 
     [PropertyOptions("Пол", RequiredType.NotRequired, PropertyType.Simple)]
     public string Sex { get; set; }
+
+    [PropertyOptions("Вид документа", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentKind { get; set; }
+
+    [PropertyOptions("Серия", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentSeries { get; set; }
+
+    [PropertyOptions("Номер", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentNumber { get; set; }
+
+    [PropertyOptions("Дата выдачи", RequiredType.NotRequired, PropertyType.Simple)]
+    public DateTimeOffset? IdentityDocumentIssueDate
+    {
+      get { return identityDocumentIssueDate; }
+      set { identityDocumentIssueDate = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+    }
+
+    [PropertyOptions("Кем выдан", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentIssuedBy { get; set; }
+
+    [PropertyOptions("Код подразделения", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentIssuerID { get; set; }
+
+    [PropertyOptions("Срок действия", RequiredType.NotRequired, PropertyType.Simple)]
+    public DateTimeOffset? IdentityDocumentExpirationDate
+    {
+      get { return identityDocumentExpirationDate; }
+      set { identityDocumentExpirationDate = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+    }
+
+    [PropertyOptions("Место рождения", RequiredType.NotRequired, PropertyType.Simple)]
+    public string IdentityDocumentBirthPlaceDirRX { get; set; }
 
     new public static IEntity CreateEntity(Dictionary<string, string> propertiesForSearch, Entity entity, List<Structures.ExceptionsStruct> exceptionList, bool isBatch, NLog.Logger logger)
     {

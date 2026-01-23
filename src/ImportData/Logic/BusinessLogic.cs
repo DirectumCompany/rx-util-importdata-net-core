@@ -457,6 +457,57 @@ namespace ImportData
     #endregion
 
     #region Словари с перечислениями.
+
+    /// <summary>
+    /// Получить Вид занятости.
+    /// </summary>
+    /// <param name="key">Вид занятости</param>
+    /// <returns>Вид занятости</returns>
+    public static string GetEmploymentType(string key)
+    {
+      Dictionary<string, string> EmploymentType = new Dictionary<string, string>
+        {
+            {"Основное место работы", "MainPlace"},
+            {"Внутреннее совместительство", "InternalConcurr"},
+            {"Внешнее совместительство", "ExternalConcurr"},
+            {"", null }
+        };
+
+      try
+      {
+        return EmploymentType[key.Trim()];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
+    }
+
+    /// <summary>
+    /// Получить Вид документа удостоверяющий личность.
+    /// </summary>
+    /// <param name="key">Вид докумнта.</param>
+    /// <returns>Вид документа.</returns>
+    public static string GetIdentityDocumentKind(string key)
+    {
+      Dictionary<string, string> IdentityDocumentKind = new Dictionary<string, string>
+        {
+            {"Паспорт гражданина РФ", "Passport"},
+            {"Иной документ, удостоверяющий личность", "OtherDocument"},
+            {"Иностранный паспорт", "ForeignPassport"},
+            {"", null }
+        };
+
+      try
+      {
+        return IdentityDocumentKind[key.Trim()];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new WellKnownKeyNotFoundException(key, ex.Message, ex.InnerException);
+      }
+    }
+
     /// <summary>
     /// Получение состояние регистрации.
     /// </summary>

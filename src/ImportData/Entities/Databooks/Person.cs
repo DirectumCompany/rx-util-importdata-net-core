@@ -9,7 +9,7 @@ namespace ImportData
 {
   class Person : Entity
   {
-    public override int PropertiesCount { get { return 18; } }
+    public override int PropertiesCount { get { return 26; } }
     protected override Type EntityType { get { return typeof(IPersons); } }
 
     protected override string GetName()
@@ -32,6 +32,9 @@ namespace ImportData
       {
         ResultValues[Constants.KeyAttributes.DateOfBirth] = null;
       }
+
+      ResultValues[Constants.KeyAttributes.IdentityDocumentKind] = BusinessLogic.GetIdentityDocumentKind((string)ResultValues[Constants.KeyAttributes.IdentityDocumentKind]);
+
 
       return false;
     }

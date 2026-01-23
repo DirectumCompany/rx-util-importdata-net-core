@@ -107,6 +107,8 @@ namespace ImportData
       public const string Extension = "Extension";
       public const string DocumentKinds = "DocumentKinds";
       public const string RecipientLinks = "RecipientLinks";
+      public const string IdentityDocumentKind = "IdentityDocumentKind";
+      public const string EmploymentType = "EmploymentType";
     }
 
     public static Dictionary<string, string> AttributeValue = new Dictionary<string, string>
