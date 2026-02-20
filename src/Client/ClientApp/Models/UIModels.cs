@@ -17,6 +17,15 @@ namespace ClientApp.Models
     public object Value { get; set; }
     public Dictionary<string, string> EnumValues { get; set; } = new();
     public ControlState State { get; set; } = new();
+    public bool NeedQuotes { get; set; } = false;
+
+    public string GetStringValue()
+    {
+      if (Value == null)
+        return null;
+
+      return NeedQuotes ? $"\"{Value}\"" : Value.ToString();
+    }
   }
 
   public static class UIControls

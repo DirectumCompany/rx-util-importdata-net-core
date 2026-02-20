@@ -62,8 +62,8 @@ namespace ClientApp.Store
             { "ImportCaseFiles", "ImportCaseFiles" }
             }
         },
-        new UIVariable() { Name = UIControlsName.ImportPackagePath, Control = "file_control", DisplayName = "Путь до файла", Value = @"Template\Example\Договоры.xlsx", Description = "Укажите полный путь до файла импорта" },
-        new UIVariable() { Name = UIControlsName.Login, Control = "string_control", DisplayName = "Логин", Value = "Administrator" },
+        new UIVariable() { Name = UIControlsName.ImportPackagePath, Control = "file_control", DisplayName = "Путь до файла", Value = @"Template\Example\Договоры.xlsx", Description = "Укажите полный путь до файла импорта", NeedQuotes = true },
+        new UIVariable() { Name = UIControlsName.Login, Control = "string_control", DisplayName = "Логин", Value = "Administrator", NeedQuotes = true },
         new UIVariable() { Name = UIControlsName.Password, Control = "password", DisplayName = "Пароль", Value = "11111" },
         new UIVariable() { Name = UIControlsName.SearchDoubles, Control = "boolean_string_control", DisplayName = "Признак поиска дубликатов", Value = "true", State = new ControlState { IsRequired = false } },
         new UIVariable() { Name = UIControlsName.UpdateBody, Control = "boolean_string_control", DisplayName = "Признак обновления последней версии документа", State = new ControlState { IsRequired = false } },
@@ -109,7 +109,7 @@ namespace ClientApp.Store
     public async Task Import(string arguments)
     {
       Console.WriteLine($"Operation: Import");
-      await this.apiClient.GetAsync($"api/import?arguments={arguments}");;
+      await this.apiClient.GetAsync($"api/import?arguments={arguments}"); ;
     }
 
     public async Task GetOutputData()
@@ -128,7 +128,7 @@ namespace ClientApp.Store
       return result;
     }
     public string CreateArguments()
-		{
+    {
       var result = new List<string>();
 
       Console.WriteLine($"Operation: CreateArguments.");
@@ -144,12 +144,12 @@ namespace ClientApp.Store
       var resultStr = string.Join(' ', result);
       Console.WriteLine($"Operation: CreateArguments. result \"{resultStr}\"");
       return resultStr;
-		}
+    }
 
     public void AddArgument(string actionKey, string controlName, IList<string> result)
-		{
+    {
       Console.WriteLine($"Operation: AddArgument. actionKey {actionKey} controlName {controlName}");
-      var controlValue = UIVariables.FirstOrDefault(v => v.Name == controlName).Value?.ToString();
+      var controlValue = UIVariables.FirstOrDefault(v => v.Name == controlName)?.GetStringValue();
       if (!string.IsNullOrEmpty(controlValue))
       {
         result.Add(actionKey);
