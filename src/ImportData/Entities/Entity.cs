@@ -99,9 +99,9 @@ namespace ImportData
               ResultValues.Add(property.Name, null);
               continue;
             }
-            
+
             // Добавляем поля и значения для поиска или создания сущностей.
-            var propertiesForSearch = GetPropertiesForSearch(property.PropertyType, exceptionList, logger);            
+            var propertiesForSearch = GetPropertiesForSearch(property.PropertyType, exceptionList, logger);
 
             if (propertiesForSearch == null)
               propertiesForSearch = new Dictionary<string, string>();
@@ -151,7 +151,7 @@ namespace ImportData
         entity = (IEntityBase)MethodCall(EntityType, Constants.EntityActions.CreateOrUpdate, entity, isNewEntity, isBatch, exceptionList, logger);
 
         // При необходимость дозаполнить свойства-коллекции.
-        if(entity != null)
+        if (entity != null)
           FillCollections(exceptionList, logger);
       }
       catch (Exception ex)
@@ -244,7 +244,7 @@ namespace ImportData
             continue;
 
           if (property.PropertyType == typeof(double))
-          { 
+          {
             if (string.IsNullOrWhiteSpace(ResultValues[property.Name].ToString()))
               property.SetValue(entity, 0d);
             else
@@ -264,22 +264,20 @@ namespace ImportData
     /// <param name="culture">Культура.</param>
     /// <returns>Преобразованная дата.</returns>
     /// <exception cref="FormatException" />
-    private DateTimeOffset ParseDate(string value, NumberStyles style, CultureInfo culture)
+    private DateTimeOffset? ParseDate(string value, NumberStyles style, CultureInfo culture)
     {
-      if (!string.IsNullOrEmpty(value))
-      {
-        DateTimeOffset date;
-        if (DateTimeOffset.TryParse(value.Trim(), culture.DateTimeFormat, DateTimeStyles.AssumeUniversal, out date))
-          return date;
+      if (string.IsNullOrEmpty(value))
+        return null;
 
-        var dateDouble = 0.0;
-        if (double.TryParse(value.Trim(), style, culture, out dateDouble))
-          return new DateTimeOffset(DateTime.FromOADate(dateDouble), TimeSpan.Zero);
+      DateTimeOffset date;
+      if (DateTimeOffset.TryParse(value.Trim(), culture.DateTimeFormat, DateTimeStyles.AssumeUniversal, out date))
+        return date;
 
-        throw new FormatException("Неверный формат строки.");
-      }
-      else
-        return DateTimeOffset.MinValue;
+      var dateDouble = 0.0;
+      if (double.TryParse(value.Trim(), style, culture, out dateDouble))
+        return new DateTimeOffset(DateTime.FromOADate(dateDouble), TimeSpan.Zero);
+
+      throw new FormatException("Неверный формат строки.");
     }
 
     /// <summary>
