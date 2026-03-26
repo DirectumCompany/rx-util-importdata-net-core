@@ -243,10 +243,12 @@ namespace ImportData
           if (options?.Characters == AdditionalCharacters.Collection)
             continue;
 
-          if (property.PropertyType == typeof(double))
-          { 
-            if (string.IsNullOrWhiteSpace(ResultValues[property.Name].ToString()))
-              property.SetValue(entity, 0d);
+          var isDouble = property.PropertyType == typeof(double);
+          var isNullableDouble = property.PropertyType == typeof(double?);
+          if (isDouble || isNullableDouble)
+          {
+            if (string.IsNullOrWhiteSpace(ResultValues[property.Name]?.ToString()))
+              property.SetValue(entity, isDouble ? 0d : null);
             else
               property.SetValue(entity, Convert.ToDouble(ResultValues[property.Name], CultureInfo.InvariantCulture));
           }
