@@ -28,14 +28,14 @@ namespace ImportData.IntegrationServicesClient.Models
     new public DateTimeOffset? DocumentDate
     {
       get { return documentDate; }
-      set { documentDate = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+      set { documentDate = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : null; }
     }
 
     [PropertyOptions("Действует с", RequiredType.Required, PropertyType.Simple)]
     new public DateTimeOffset? ValidFrom
     {
       get { return validFrom; }
-      set { validFrom = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+      set { validFrom = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : null; }
     }
 
     [PropertyOptions("Действует по", RequiredType.Required, PropertyType.Simple)]

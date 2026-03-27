@@ -6,8 +6,8 @@ namespace ImportData.IntegrationServicesClient.Models
 {
   public class IContractualDocuments : IOfficialDocuments
   {
-    private DateTimeOffset? validFrom;
-    private DateTimeOffset? validTill;
+    private DateTimeOffset? validFrom = null;
+    private DateTimeOffset? validTill = null;
     public IEmployees Assignee { get; set; }
 
     [PropertyOptions("Наша организация", RequiredType.Required, PropertyType.Entity, AdditionalCharacters.ForSearch)]
@@ -25,14 +25,14 @@ namespace ImportData.IntegrationServicesClient.Models
     public DateTimeOffset? ValidFrom
     {
       get { return validFrom; }
-      set { validFrom = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+      set { validFrom = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : null; }
     }
 
     [PropertyOptions("Действует по", RequiredType.NotRequired, PropertyType.Simple, AdditionalCharacters.ForSearch)]
     public DateTimeOffset? ValidTill
     {
       get { return validTill; }
-      set { validTill = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : new DateTimeOffset?(); }
+      set { validTill = value.HasValue ? new DateTimeOffset(value.Value.Date, TimeSpan.Zero) : null; }
     }
 
     [PropertyOptions("Сумма", RequiredType.NotRequired, PropertyType.Simple)]
