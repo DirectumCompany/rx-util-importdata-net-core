@@ -7,8 +7,8 @@ namespace ImportData.Entities.Databooks
 {
   public class Substitution : Entity
   {
-    public override int PropertiesCount { get { return 4; } }
-    protected override Type EntityType { get { return typeof(ISubstitutions); } }
+    public override int PropertiesCount { get { return 6; } }
+    protected override Type EntityType { get { return typeof(ISubstitutionsWithBU); } }
 
     protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
