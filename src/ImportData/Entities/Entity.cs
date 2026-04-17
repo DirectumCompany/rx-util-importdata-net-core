@@ -264,7 +264,7 @@ namespace ImportData
     /// <param name="culture">Культура.</param>
     /// <returns>Преобразованная дата.</returns>
     /// <exception cref="FormatException" />
-    private DateTimeOffset ParseDate(string value, NumberStyles style, CultureInfo culture)
+    private DateTimeOffset? ParseDate(string value, NumberStyles style, CultureInfo culture)
     {
       if (!string.IsNullOrEmpty(value))
       {
@@ -279,7 +279,7 @@ namespace ImportData
         throw new FormatException("Неверный формат строки.");
       }
       else
-        return DateTimeOffset.MinValue;
+        return null;
     }
 
     /// <summary>
