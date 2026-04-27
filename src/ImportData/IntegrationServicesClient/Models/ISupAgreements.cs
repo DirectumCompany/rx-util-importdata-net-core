@@ -46,7 +46,7 @@ namespace ImportData.IntegrationServicesClient.Models
     }
 
     [PropertyOptions("Сумма", RequiredType.Required, PropertyType.Simple)]
-    new public double TotalAmount { get; set; }
+    new public double? TotalAmount { get; set; }
 
     [PropertyOptions("Состояние", RequiredType.NotRequired, PropertyType.Simple)]
     new public string LifeCycleState { get; set; }
