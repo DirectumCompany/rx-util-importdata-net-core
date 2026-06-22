@@ -15,12 +15,12 @@ namespace ImportData
     public override int PropertiesCount { get { return 16; } }
     protected override Type EntityType { get { return typeof(IAddendums); } }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       if ((DateTimeOffset)ResultValues[Constants.KeyAttributes.RegistrationDate] == DateTimeOffset.MinValue)
         ResultValues[Constants.KeyAttributes.RegistrationDate] = null;
       
-      base.FillProperies(exceptionList, logger);
+      base.FillProperties(exceptionList, logger);
 
       if (ResultValues[Constants.KeyAttributes.Created] == null)
         ResultValues[Constants.KeyAttributes.Created] = DateTimeOffset.Now;

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using ImportData.IntegrationServicesClient;
+using ImportData.IntegrationServicesClient.Models;
+using ImportData.Entities.Databooks;
 
 namespace ImportData
 {
@@ -67,6 +69,8 @@ namespace ImportData
         entity.NamingParameters = titles.Where(x => x != string.Empty)
           .Select((k, i) => (k, i))
           .ToDictionary(x => x.k, x => importItem[x.i]);
+
+        entity.SheetName = sheetName;
 
         if (entity != null)
         {
@@ -167,9 +171,17 @@ namespace ImportData
         if (result.Where(x => x.ErrorType == Constants.ErrorTypes.Error).Any())
         {
           // TODO: Добавить локализацию строки.
-          var message = string.Join("; ", result.Where(x => x.ErrorType == Constants.ErrorTypes.Error).Select(x => x.Message).ToArray());
+          var messageColum = "Не загружен";
+          if (type == typeof(ConfigurationItemCategory) ||
+              type == typeof(ConfigurationItemKind)  ||
+              type == typeof(ConfigurationItemRelationType) ||
+              type == typeof(ConfigurationItem) ||
+              type == typeof(ConfigurationItemRelation))
+            messageColum = "Ошибка";
+
+		  var message = string.Join("; ", result.Where(x => x.ErrorType == Constants.ErrorTypes.Error).Select(x => x.Message).ToArray());
           text = null;
-          text = new string[] { "Не загружен", DateTime.Now.ToString("d"), message };
+          text = new string[] { messageColum, DateTime.Now.ToString("d"), message };
           for (int i = 1; i <= 3; i++)
           {
             var title = excelProcessor.GetExcelColumnName(paramCount + i);

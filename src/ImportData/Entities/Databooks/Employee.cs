@@ -17,7 +17,7 @@ namespace ImportData
       return person.Name;
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.Name] = GetName();
       ResultValues[Constants.KeyAttributes.NeedNotifyExpiredAssignments] = !string.IsNullOrEmpty((string)ResultValues[Constants.KeyAttributes.Email]);

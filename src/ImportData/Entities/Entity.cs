@@ -20,6 +20,7 @@ namespace ImportData
 {
   public class Entity
   {
+    public string SheetName { get; set; }
     public Dictionary<string, string> NamingParameters { get; set; }
     public Dictionary<string, string> ExtraParameters { get; set; }
     public Dictionary<string, object> ResultValues { get; set; }
@@ -99,9 +100,8 @@ namespace ImportData
               ResultValues.Add(property.Name, null);
               continue;
             }
-            
             // Добавляем поля и значения для поиска или создания сущностей.
-            var propertiesForSearch = GetPropertiesForSearch(property.PropertyType, exceptionList, logger);            
+            var propertiesForSearch = GetPropertiesForSearch(property.PropertyType, exceptionList, logger);
 
             if (propertiesForSearch == null)
               propertiesForSearch = new Dictionary<string, string>();
@@ -128,7 +128,7 @@ namespace ImportData
 
       // Специфичные преобразования / проверки полей, которые нет возможности унифицировать.
       // Если метод вернул true, значит при проверках была добавлена ошибка, сущность не может быть загружена.
-      var hasTransformationErrors = FillProperies(exceptionList, logger);
+      var hasTransformationErrors = FillProperties(exceptionList, logger);
       if (hasTransformationErrors)
         return exceptionList;
 
@@ -136,26 +136,27 @@ namespace ImportData
       try
       {
         var propertiesForCreate = GetPropertiesForSearch(EntityType, exceptionList, logger);
+
         if (ignoreDuplicates.ToLower() != Constants.ignoreDuplicates.ToLower())
           entity = (IEntityBase)MethodCall(EntityType, Constants.EntityActions.FindEntity, propertiesForCreate, this, true, exceptionList, logger);
+
         if (entity == null)
         {
           isNewEntity = true;
           entity = (IEntityBase)Activator.CreateInstance(EntityType);
         }
-
         // Заполнение полей.
         UpdateProperties(entity);
-
         // Создание сущности.
         entity = (IEntityBase)MethodCall(EntityType, Constants.EntityActions.CreateOrUpdate, entity, isNewEntity, isBatch, exceptionList, logger);
 
         // При необходимость дозаполнить свойства-коллекции.
-        if(entity != null)
+        if (entity != null)
           FillCollections(exceptionList, logger);
       }
       catch (Exception ex)
       {
+        Console.WriteLine(ex.ToString());
         exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = ex.Message });
 
         return exceptionList;
@@ -235,25 +236,35 @@ namespace ImportData
     private void UpdateProperties(IEntityBase entity)
     {
       var entityProperties = EntityType.GetProperties();
+
       foreach (var property in entityProperties)
       {
-        if (ResultValues.ContainsKey(property.Name))
-        {
-          var options = BusinessLogic.GetPropertyOptions(property);
-          if (options?.Characters == AdditionalCharacters.Collection)
-            continue;
+        if (!ResultValues.ContainsKey(property.Name))
+          continue;
 
-          var isDouble = property.PropertyType == typeof(double);
-          var isNullableDouble = property.PropertyType == typeof(double?);
-          if (isDouble || isNullableDouble)
-          {
-            if (string.IsNullOrWhiteSpace(ResultValues[property.Name]?.ToString()))
-              property.SetValue(entity, isDouble ? 0d : null);
-            else
-              property.SetValue(entity, Convert.ToDouble(ResultValues[property.Name], CultureInfo.InvariantCulture));
-          }
+        var options = BusinessLogic.GetPropertyOptions(property);
+        if (options?.Characters == AdditionalCharacters.Collection)
+          continue;
+
+        var value = ResultValues[property.Name];
+
+        if (property.PropertyType == typeof(double))
+        {
+          if (string.IsNullOrWhiteSpace(value?.ToString()))
+            property.SetValue(entity, 0d);
           else
-            property.SetValue(entity, ResultValues[property.Name]);
+            property.SetValue(entity, Convert.ToDouble(value, CultureInfo.InvariantCulture));
+        }
+        else if (property.PropertyType == typeof(bool))
+        {
+          if (bool.TryParse(value?.ToString(), out var boolValue))
+            property.SetValue(entity, boolValue);
+          else
+            property.SetValue(entity, false);
+        }
+        else
+        {
+          property.SetValue(entity, value);
         }
       }
     }
@@ -266,7 +277,7 @@ namespace ImportData
     /// <param name="culture">Культура.</param>
     /// <returns>Преобразованная дата.</returns>
     /// <exception cref="FormatException" />
-    private DateTimeOffset? ParseDate(string value, NumberStyles style, CultureInfo culture)
+    private DateTimeOffset ParseDate(string value, NumberStyles style, CultureInfo culture)
     {
       if (!string.IsNullOrEmpty(value))
       {
@@ -281,7 +292,7 @@ namespace ImportData
         throw new FormatException("Неверный формат строки.");
       }
       else
-        return null;
+        return DateTimeOffset.MinValue;
     }
 
     /// <summary>
@@ -342,7 +353,7 @@ namespace ImportData
     /// <param name="exceptionList">Список ошибок.</param>
     /// <param name="logger">Логировщик.</param>
     /// <returns>True, если были ошибки заполнения свойств, иначе false.</returns>
-    protected virtual bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected virtual bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       return false;
     }

@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using ImportUtilServer.Controllers;
+using Microsoft.Extensions.Hosting;
 
 namespace ImportUtilServer.Models
 {
@@ -12,17 +11,28 @@ namespace ImportUtilServer.Models
         private bool isImportActive = false;
         private string utilPath = string.Empty;
 
-        public Import(IConfiguration configuration)
+        public Import(IConfiguration configuration, IHostEnvironment env)
         {
             utilPath = configuration.GetValue<string>("UtilPath");
-            utilPath = Path.GetFullPath(utilPath, Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+            if (env.IsProduction())
+            {
+                utilPath = Path.GetFullPath(utilPath, Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+            }
+
+            else if (env.IsDevelopment())
+            {
+                var solutionRoot = FindSolutionRoot();
+                if (solutionRoot == null)
+                    throw new Exception("Не удалось найти корень solution (.sln).");
+                utilPath = Path.GetFullPath(utilPath, solutionRoot);
+            }
         }
 
         public void Execute(string arguments)
         {
             if (isImportActive)
                 return;
-            
+
             ThreadPool.QueueUserWorkItem<object>(_ =>
             {
                 try
@@ -31,7 +41,7 @@ namespace ImportUtilServer.Models
                     isImportActive = true;
                     if (!File.Exists(utilPath))
                         throw new FileNotFoundException($"Утилита импорта по пути {utilPath} не найдена");
-                    using Process process = new(); 
+                    using Process process = new();
                     process.StartInfo.FileName = RuntimeInformation
                         .IsOSPlatform(OSPlatform.Windows) ? "dotnet.exe" : "dotnet";
                     process.StartInfo.Arguments = $"\"{utilPath}\" {arguments}";
@@ -49,7 +59,7 @@ namespace ImportUtilServer.Models
                     process.WaitForExitAsync().Wait(); //ожидаем окончания работы приложения, чтобы очистить буфер
                     process.Close(); //завершает процесс
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     lock (outputData)
                         outputData.Add(ex.Message);
@@ -92,6 +102,25 @@ namespace ImportUtilServer.Models
                 lock (outputData)
                     outputData.Add(e.Data);
             }
+        }
+
+        /// <summary>
+        /// Найти путь к папке с решением ImportData.
+        /// </summary>
+        /// <returns>Путь до папки с решением.</returns>
+        private static string FindSolutionRoot()
+        {
+            var dir = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+
+            while (dir != null)
+            {
+                if (dir.GetFiles("ImportData.sln").Any())
+                    return dir.FullName;
+
+                dir = dir.Parent;
+            }
+
+            return string.Empty;
         }
     }
 }

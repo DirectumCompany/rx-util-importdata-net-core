@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using ImportUtilServer.Models;
-using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddServerSideBlazor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -11,6 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<Import>();
 
 var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -32,8 +33,11 @@ if (app.Environment.IsDevelopment())
 
 app.MapRazorPages();
 app.MapControllers();
+
 if (app.Environment.IsDevelopment())
+{
     app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+}
 
 app.MapFallbackToFile("index.html");
 

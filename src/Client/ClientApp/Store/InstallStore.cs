@@ -40,7 +40,7 @@ namespace ClientApp.Store
       {
         new UIVariable() { Name = UIControlsName.ImportUtil, Control = "group_header_control", DisplayName = "Утилита импорта", Description = "{\"name\": \"Утилита импорта\"}" },
         new UIVariable() { Name = UIControlsName.Action, Control = "enum_control", DisplayName = "Действие", EnumValues = new () {
-            { "ImportCompany", "ImportCompany" },
+            { "Орг.структура", "ImportCompany" },
             { "ImportCompanies", "ImportCompanies" },
             { "ImportPersons", "ImportPersons" },
             { "ImportContracts", "ImportContracts" },
@@ -56,10 +56,14 @@ namespace ClientApp.Store
             { "ImportDepartments", "ImportDepartments" },
             { "ImportEmployees", "ImportEmployees" },
             { "ImportContacts", "ImportContacts" },
-            { "ImportLogins", "ImportLogins" },
+            { "Логины", "ImportLogins" },
             { "ImportSubstitutions", "ImportSubstitutions" },
             { "ImportCompanyDirectives", "ImportCompanyDirectives" },
-            { "ImportCaseFiles", "ImportCaseFiles" }
+            { "ImportCaseFiles", "ImportCaseFiles" },
+            { "КЕ", "ImportCmdb" },
+            { "Роли", "ImportRoles" },
+            { "Категории услуг", "ImportServiceCategories" },
+            { "Услуги", "ImportServices" }
             }
         },
         new UIVariable() { Name = UIControlsName.ImportPackagePath, Control = "file_control", DisplayName = "Путь до файла", Value = @"Template\Example\Договоры.xlsx", Description = "Укажите полный путь до файла импорта", NeedQuotes = true },

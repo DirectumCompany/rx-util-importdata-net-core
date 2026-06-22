@@ -19,7 +19,7 @@ namespace ImportData
       return manager.Name;
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       var managerName = GetName();
       ResultValues[Constants.KeyAttributes.Manager] = BusinessLogic.GetEntityWithFilter<IEmployees>(x => x.Name == managerName, exceptionList, logger);
