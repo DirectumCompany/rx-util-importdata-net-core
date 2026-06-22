@@ -36,7 +36,7 @@ namespace ImportData.Entities.Databooks
       }
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.Name] = GetName();
       ResultValues[Constants.KeyAttributes.StartDate] = GetDateTime(Constants.KeyAttributes.StartDate);

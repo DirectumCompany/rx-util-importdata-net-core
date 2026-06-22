@@ -13,6 +13,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Logging;
 using DocumentFormat.OpenXml.Vml.Office;
 using System.Reflection;
+using ImportData.Entities.Databooks;
 
 namespace ImportData
 {
@@ -267,6 +268,46 @@ namespace ImportData
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
       }
       return null;
+    }
+
+    /// <summary>
+    /// Заполнить значение для одного свойства с типом "Картинка".
+    /// </summary>
+    /// <param name="entity">Сущность.</param>
+    /// <param name="filePath">Путь до файла.</param>
+    /// <param name="logger">Логировщик.</param>
+    /// <returns>Список ошибок.</returns>
+    public static IEnumerable<Structures.ExceptionsStruct> AddImage(IEntityWithImage entity, string filePath, Logger logger)
+    {
+      var exceptionList = new List<Structures.ExceptionsStruct>();
+      logger.Info("Добавление картинки для сущности");
+
+      try
+      {
+        if (!File.Exists(filePath))
+        {
+          var message = string.Format("Не найден файл по заданому пути: \"{0}\"", filePath);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
+          logger.Warn(message);
+
+          return exceptionList;
+        }
+
+        var image = new IBinaryData();
+        image.Value = File.ReadAllBytes(filePath);
+
+        bool isAddedImage = entity.AddImage(image);
+      }
+      catch (Exception ex)
+      {
+        var message = string.Format("Не удается добавить картинку. Ошибка: \"{0}\"", ex.Message);
+        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        logger.Warn(message);
+
+        return exceptionList;
+      }
+
+      return exceptionList;
     }
     #endregion
 
@@ -932,6 +973,89 @@ namespace ImportData
       logger.Error(message);
       return Constants.ErrorTypes.Warn;
     }
+    #endregion
+
+    #region Работа с учетными записями.
+
+    /// <summary>
+    /// Создать учетную запись с паролем.
+    /// </summary>
+    /// <param name="logger">Логировщик.</param>
+    /// <param name="exceptionList">Логировщик.</param>
+    /// <param name="login">Учетная запись.</param>
+    /// <param name="isNewEntity">Признак новой сущности.</param>
+    /// <returns>Список ошибок.</returns>
+    public static ILogins CreateOrUpdateLoginWithPassword(Logger logger, List<Structures.ExceptionsStruct> exceptionList, ILogins login, bool isNewEntity)
+    {
+      ILogins result = null;
+
+      if (!isNewEntity) 
+      {
+        result = login;
+        logger.Info(string.Format("Изменение учетной записи \"{0}\" с паролем", login.LoginName));
+      }
+      else
+      {
+        var password = "1Qwerty";
+        logger.Info(string.Format("Создание учетной записи \"{0}\" с паролем", login.LoginName));
+
+        try
+        {
+          var client = Client.Instance();
+          var setLoginPasswordRequest = client.For("Company")
+            .Action("CreateLogin")
+            .Set(new { loginName = login.LoginName, password = password })
+            .ExecuteAsync();
+          setLoginPasswordRequest.Wait();
+          result = BusinessLogic.GetEntityWithFilter<ILogins>(x => x.LoginName == login.LoginName, exceptionList, logger); ;
+        }
+        catch (Exception ex)
+        {
+          var message = string.Format("Не удается создать учетную запись с паролем \"{0}\". Ошибка: \"{1}\"", login.LoginName, ex.Message);
+          logger.Warn(message);
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Установить пароль для учетной записи.
+    /// </summary>
+    /// <param name="logger">Логировщик.</param>
+    /// <param name="exceptionList">Список ошибок.</param>
+    /// <param name="login">Учетная запись.</param>
+    /// <param name="password">Пароль.</param>
+    /// <returns>Список ошибок.</returns>
+    public static IEnumerable<Structures.ExceptionsStruct> SetLoginPassword(Logger logger, List<Structures.ExceptionsStruct> exceptionList, ILogins login, string password)
+    {
+      logger.Info(string.Format("Установка пароля для учетной записи \"{0}\"", login.LoginName));
+
+      try
+      {
+        if (string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(password))
+        {
+          var message = string.Format("Не удалось установить пароль для учетной записи \"{0}\". Ошибка: \"Указана пустая строка вместо пароля\"", login.LoginName);
+          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+          return exceptionList;
+        }
+
+        var client = Client.Instance();
+        var setLoginPasswordRequest = client.For("Company")
+          .Action("SetLoginPassword")
+          .Set(new { loginId = login.Id, password = password })
+          .ExecuteAsync();
+      }
+      catch (Exception ex)
+      {
+        var message = string.Format("Не удается создать учетную запись с паролем \"{0}\". Ошибка: \"{1}\"", login.LoginName, ex.Message);
+        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
+        logger.Warn(message);
+      }
+
+      return exceptionList;
+    }
+
     #endregion
   }
 }

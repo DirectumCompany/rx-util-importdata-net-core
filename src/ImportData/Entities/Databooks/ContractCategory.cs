@@ -11,7 +11,7 @@ namespace ImportData.Entities.Databooks
     public override int PropertiesCount { get { return 3; } }
     protected override Type EntityType { get { return typeof(IContractCategories); } }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
       return false;

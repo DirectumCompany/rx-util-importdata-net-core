@@ -40,10 +40,7 @@ namespace ImportData.IntegrationServicesClient.Models
 
     new public static IEntityBase CreateOrUpdate(IEntityBase entity, bool isNewEntity, bool isBatch, List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
-      if (isNewEntity)
-        return BusinessLogic.CreateEntity((ILogins)entity, exceptionList, logger);
-      else
-        return BusinessLogic.UpdateEntity((ILogins)entity, exceptionList, logger);
+      return BusinessLogic.CreateOrUpdateLoginWithPassword(logger, exceptionList, (ILogins)entity, isNewEntity);
     }
   }
 }

@@ -16,7 +16,7 @@ namespace ImportData.Entities.Databooks
       return person.Name;
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       var person = (IPersons)ResultValues[Constants.KeyAttributes.Person];
 
