@@ -248,10 +248,12 @@ namespace ImportData
 
         var value = ResultValues[property.Name];
 
-        if (property.PropertyType == typeof(double))
+        var isDouble = property.PropertyType == typeof(double);
+        var isNullableDouble = property.PropertyType == typeof(double?);
+        if (isDouble || isNullableDouble)
         {
           if (string.IsNullOrWhiteSpace(value?.ToString()))
-            property.SetValue(entity, 0d);
+            property.SetValue(entity, isDouble ? 0d : null);
           else
             property.SetValue(entity, Convert.ToDouble(value, CultureInfo.InvariantCulture));
         }
@@ -277,7 +279,7 @@ namespace ImportData
     /// <param name="culture">Культура.</param>
     /// <returns>Преобразованная дата.</returns>
     /// <exception cref="FormatException" />
-    private DateTimeOffset ParseDate(string value, NumberStyles style, CultureInfo culture)
+    private DateTimeOffset? ParseDate(string value, NumberStyles style, CultureInfo culture)
     {
       if (!string.IsNullOrEmpty(value))
       {
@@ -292,7 +294,7 @@ namespace ImportData
         throw new FormatException("Неверный формат строки.");
       }
       else
-        return DateTimeOffset.MinValue;
+        return null;
     }
 
     /// <summary>

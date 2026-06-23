@@ -150,10 +150,15 @@ namespace ImportData
       public const string RelationName = "RelationName";
     }
 
+    public class AuthenticationTypes
+    {
+      public const string Password = "Password";
+      public const string Windows = "Windows";
+    }
+
     public static Dictionary<string, string> AttributeValue = new Dictionary<string, string>
       {
         {KeyAttributes.Status, "Active"},
-        {KeyAttributes.TypeAuthentication, "Password"},
         {KeyAttributes.RegisterType, "Registration"},
       };
 

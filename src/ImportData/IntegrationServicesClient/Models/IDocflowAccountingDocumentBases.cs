@@ -26,7 +26,7 @@ namespace ImportData.IntegrationServicesClient.Models
     new public IOfficialDocuments LeadingDocument { get; set; }
 
     [PropertyOptions("Сумма", RequiredType.NotRequired, PropertyType.Simple)]
-    public double TotalAmount { get; set; }
+    public double? TotalAmount { get; set; }
 
     [PropertyOptions("Валюта", RequiredType.NotRequired, PropertyType.Entity, AdditionalCharacters.ForSearch)]
     public ICurrencies Currency { get; set; }

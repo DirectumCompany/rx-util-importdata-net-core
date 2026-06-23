@@ -29,7 +29,8 @@ namespace ImportData.Entities.Databooks
       {
         var login = (ILogins)entity;
 
-        if (NamingParameters.ContainsKey(Constants.KeyAttributes.Password))
+        if (NamingParameters.ContainsKey(Constants.KeyAttributes.Password) &&
+            !string.IsNullOrWhiteSpace(NamingParameters[Constants.KeyAttributes.Password]))
         {
           exceptionList.AddRange(BusinessLogic.SetLoginPassword(logger, exceptionList, login, NamingParameters[Constants.KeyAttributes.Password]));
         }
@@ -45,7 +46,9 @@ namespace ImportData.Entities.Databooks
     protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.NeedChangePassword] = false;
-      ResultValues[Constants.KeyAttributes.TypeAuthentication] = Constants.AttributeValue[Constants.KeyAttributes.TypeAuthentication];
+      var hasPassword = NamingParameters.ContainsKey(Constants.KeyAttributes.Password) &&
+                        !string.IsNullOrWhiteSpace(NamingParameters[Constants.KeyAttributes.Password]);
+      ResultValues[Constants.KeyAttributes.TypeAuthentication] = hasPassword ? Constants.AuthenticationTypes.Password : Constants.AuthenticationTypes.Windows;
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
 
       return false;

@@ -40,7 +40,7 @@ namespace ClientApp.Store
       {
         new UIVariable() { Name = UIControlsName.ImportUtil, Control = "group_header_control", DisplayName = "Утилита импорта", Description = "{\"name\": \"Утилита импорта\"}" },
         new UIVariable() { Name = UIControlsName.Action, Control = "enum_control", DisplayName = "Действие", EnumValues = new () {
-            { "Орг.структура", "ImportCompany" },
+            { "ImportCompany", "ImportCompany" },
             { "ImportCompanies", "ImportCompanies" },
             { "ImportPersons", "ImportPersons" },
             { "ImportContracts", "ImportContracts" },
@@ -56,7 +56,7 @@ namespace ClientApp.Store
             { "ImportDepartments", "ImportDepartments" },
             { "ImportEmployees", "ImportEmployees" },
             { "ImportContacts", "ImportContacts" },
-            { "Логины", "ImportLogins" },
+            { "ImportLogins", "ImportLogins" },
             { "ImportSubstitutions", "ImportSubstitutions" },
             { "ImportCompanyDirectives", "ImportCompanyDirectives" },
             { "ImportCaseFiles", "ImportCaseFiles" },
