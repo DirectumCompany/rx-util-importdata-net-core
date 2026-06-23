@@ -56,6 +56,7 @@ namespace ImportData
       public const string LeadingDocument = "LeadingDocument";
       public const string LifeCycleState = "LifeCycleState";
       public const string LoginName = "LoginName";
+      public const string Password = "Пароль";
       public const string LongTerm = "LongTerm";
       public const string Manager = "Manager";
       public const string ManyAddresses = "IsManyAddressees";
@@ -107,12 +108,57 @@ namespace ImportData
       public const string Extension = "Extension";
       public const string DocumentKinds = "DocumentKinds";
       public const string RecipientLinks = "RecipientLinks";
+      public const string RequestType = "RequestType";
+      public const string Urgency = "Urgency";
+      public const string Influence = "Influence";
+      public const string ServiceManager = "ServiceManager";
+      public const string CategoriesCollection = "CategoriesCollection";
+      public const string AvailableFor = "AvailableFor";
+      public const string AvailableCollection = "AvailableCollection";
+      public const string LogoRu = "Логотип";
+      public const string SubsidiaryCategory = "Родительская категория";
+      public const string IntentExamplesForTool = "IntentExamplesForTool";
+      public const string Example = "Example";
+      public const string ConfigurationItemCategoryGuid = "ConfigurationItemCategoryGuid";
+      public const string ConfigurationItemCategory = "ConfigurationItemCategory";
+      public const string SourceConfigurationItemCategory = "SourceConfigurationItemCategory";
+      public const string SourceConfigurationItemKind = "SourceConfigurationItemKind";
+      public const string TargetConfigurationItemCategory = "TargetConfigurationItemCategory";
+      public const string TargetConfigurationItemKind = "TargetConfigurationItemKind";
+      public const string ConfigurationItemKind = "ConfigurationItemKind";
+      public const string ConfigurationItemLifeCycleState = "ConfigurationItemLifeCycleState";
+      public const string IsClosing = "IsClosing";
+      public const string AssignedEmployee = "AssignedEmployee";
+      public const string Manufacturer = "Manufacturer";
+      public const string SerialNumber = "SerialNumber";
+      public const string Version = "Version";
+      public const string Note = "Note";
+      public const string LocationsAddress = "LocationsAddress";
+      public const string ContactInfo = "ContactInfo";
+      public const string HardwareRequirements = "HardwareRequirements";
+      public const string License = "License";
+      public const string Model = "Model";
+      public const string PowerConsumption = "PowerConsumption";
+      public const string IPAddress = "IPAddress";
+      public const string MACAddress = "MACAddress";
+      public const string PortNumber = "PortNumber";
+      public const string PortSpeed = "PortSpeed";
+      public const string SourceName = "SourceName";
+      public const string TargetName = "TargetName";
+      public const string SourceCode = "SourceCode";
+      public const string TargetCode = "TargetCode";
+      public const string RelationName = "RelationName";
+    }
+
+    public class AuthenticationTypes
+    {
+      public const string Password = "Password";
+      public const string Windows = "Windows";
     }
 
     public static Dictionary<string, string> AttributeValue = new Dictionary<string, string>
       {
         {KeyAttributes.Status, "Active"},
-        {KeyAttributes.TypeAuthentication, "Windows"},
         {KeyAttributes.RegisterType, "Registration"},
       };
 
@@ -153,6 +199,19 @@ namespace ImportData
       public const string UTD = "УПД";
       public const string ContractStatement = "Акты";
       public const string SimpleDocument = "ПростойДокумент";
+      public const string Services = "Услуги";
+      public const string ServiceCategories = "КатегорииУслуг";
+      public const string ConfigurationItemKind = "Типы КЕ";
+      public const string ConfigurationItemRelationType = "Типы связей КЕ";
+      public const string RelationsCMDB = "Связи между КЕ";
+      public const string ConfigurationItemLifeCycle = "Состояние КЕ";
+      public const string ConfigurationItemOfficeEquipment = "КЕ Офисное оборудование";
+      public const string ConfigurationItemSoftware = "КЕ Программное обеспечение";
+      public const string ConfigurationItemServices = "КЕ Сервис";
+      public const string ConfigurationItemLocations = "КЕ Местоположения";
+      public const string ConfigurationItemITEquipment = "КЕ ИТ-оборудование";
+      public const string ConfigurationItemPCComponents = "КЕ Комплектующие ПК";
+      public const string ConfigurationItemTechnicalEquipment = "КЕ Техническое оборудование";
     }
 
     public class Actions
@@ -185,44 +244,50 @@ namespace ImportData
       public const string ImportUTD = "importutd";
       public const string ImportContractStatement = "importcontractstatement";
       public const string ImportSimpleDocument = "importsimpledocument";
+      public const string ImportServices = "importservices";
+      public const string ImportServiceCategories = "importservicecategories";
+      public const string ImportCMDB = "importcmdb";
 
       // Инициализация клиента, для тестов.
       public const string InitForTests = "init";
 
       public static Dictionary<string, string> dictActions = new Dictionary<string, string>
-            {
-                {ImportCompany, ImportCompany},
-                {ImportCompanies, ImportCompanies},
-                {ImportPersons, ImportPersons},
-                {ImportContracts, ImportContracts},
-                {ImportSupAgreements, ImportSupAgreements},
-                {ImportIncomingLetters, ImportIncomingLetters},
-                {ImportOutgoingLetters, ImportOutgoingLetters},
-                {ImportOutgoingLettersAddressees, ImportOutgoingLettersAddressees},
-                {ImportOrders, ImportOrders},
-                {ImportAddendums, ImportAddendums},
-                {ImportDepartments, ImportDepartments},
-                {ImportEmployees, ImportEmployees},
-                {ImportContacts, ImportContacts},
-                {ImportCompanyDirectives, ImportCompanyDirectives},
-                {ImportLogins, ImportLogins},
-                {ImportCaseFiles, ImportCaseFiles},
-                {ImportCountries, ImportCountries},
-                {ImportCurrencies, ImportCurrencies},
-                {ImportSubstitutions, ImportSubstitutions},
-                {ImportRoles, ImportRoles},
-                {ImportAssociatedApplications, ImportAssociatedApplications},
-                {ImportContractCategories, ImportContractCategories},
-                {ImportDocumentRegisters, ImportDocumentRegisters},
-                {ImportDocumentKinds, ImportDocumentKinds},
-                {ImportWaybills, ImportWaybills},
-                {ImportUTD, ImportUTD},
-                {ImportContractStatement, ImportContractStatement},
-                {ImportSimpleDocument, ImportSimpleDocument},
+      {
+        {ImportCompany, ImportCompany},
+        {ImportCompanies, ImportCompanies},
+        {ImportPersons, ImportPersons},
+        {ImportContracts, ImportContracts},
+        {ImportSupAgreements, ImportSupAgreements},
+        {ImportIncomingLetters, ImportIncomingLetters},
+        {ImportOutgoingLetters, ImportOutgoingLetters},
+        {ImportOutgoingLettersAddressees, ImportOutgoingLettersAddressees},
+        {ImportOrders, ImportOrders},
+        {ImportAddendums, ImportAddendums},
+        {ImportDepartments, ImportDepartments},
+        {ImportEmployees, ImportEmployees},
+        {ImportContacts, ImportContacts},
+        {ImportCompanyDirectives, ImportCompanyDirectives},
+        {ImportLogins, ImportLogins},
+        {ImportCaseFiles, ImportCaseFiles},
+        {ImportCountries, ImportCountries},
+        {ImportCurrencies, ImportCurrencies},
+        {ImportSubstitutions, ImportSubstitutions},
+        {ImportRoles, ImportRoles},
+        {ImportAssociatedApplications, ImportAssociatedApplications},
+        {ImportContractCategories, ImportContractCategories},
+        {ImportDocumentRegisters, ImportDocumentRegisters},
+        {ImportDocumentKinds, ImportDocumentKinds},
+        {ImportWaybills, ImportWaybills},
+        {ImportUTD, ImportUTD},
+        {ImportContractStatement, ImportContractStatement},
+        {ImportSimpleDocument, ImportSimpleDocument},
+        {ImportServices, ImportServices},
+        {ImportServiceCategories, ImportServiceCategories},
+        {ImportCMDB, ImportCMDB},
 
-                // Инициализация клиента, для тестов.
-                {InitForTests, InitForTests}
-            };
+        // Инициализация клиента, для тестов.
+        {InitForTests, InitForTests}
+      };
     }
 
     public class Resources
@@ -244,6 +309,7 @@ namespace ImportData
       public const string NeedRequiredDocumentBody = "Импортирумая сущность должна содержать ссылку на тело документа, столбец с наименованием {0}.";
       public const string EntityNotLoaded = "Сущность {0} не загружена, т.к. уже существует в системе.";
       public const string RegistrationGroupName = "Группа регистрации";
+      public const string EmailNotValid = "Введенный адрес электронной почты имеет неверный формат.";
     }
 
     public class ConfigServices

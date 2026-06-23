@@ -13,6 +13,9 @@ namespace ImportData
 {
   public class Program
   {
+    public static string IntegrationPassword;
+    public static string IntegrationLogin;
+    public static string IntegrationUrl;
     public static Logger logger = LogManager.GetCurrentClassLogger();
     private const string DefaultConfigSettingsName = @"_ConfigSettings.xml";
 
@@ -123,6 +126,29 @@ namespace ImportData
         case "importsimpledocument":
           EntityProcessor.Process(typeof(SimpleDocument), xlsxPath, Constants.SheetNames.SimpleDocument, extraParameters, ignoreDuplicates, isBatch, logger);
           break;
+        case "importservices":
+          EntityProcessor.Process(typeof(Service), xlsxPath, Constants.SheetNames.Services, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importservicecategories":
+          EntityProcessor.Process(typeof(ServiceCategory), xlsxPath, Constants.SheetNames.ServiceCategories, extraParameters, ignoreDuplicates, isBatch, logger);
+          break;
+        case "importcmdb":
+          {
+            EntityProcessor.Process(typeof(ConfigurationItemKind), xlsxPath, Constants.SheetNames.ConfigurationItemKind, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItemLifeCycleState), xlsxPath, Constants.SheetNames.ConfigurationItemLifeCycle, extraParameters, ignoreDuplicates, isBatch, logger);
+
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemOfficeEquipment, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemSoftware, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemServices, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemLocations, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemITEquipment, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemPCComponents, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItem), xlsxPath, Constants.SheetNames.ConfigurationItemTechnicalEquipment, extraParameters, ignoreDuplicates, isBatch, logger);
+
+            EntityProcessor.Process(typeof(ConfigurationItemRelationType), xlsxPath, Constants.SheetNames.ConfigurationItemRelationType, extraParameters, ignoreDuplicates, isBatch, logger);
+            EntityProcessor.Process(typeof(ConfigurationItemRelation), xlsxPath, Constants.SheetNames.RelationsCMDB, extraParameters, ignoreDuplicates, isBatch, logger);
+          }
+          break;
         default:
           break;
       }
@@ -130,7 +156,7 @@ namespace ImportData
 
     public static void Main(string[] args)
     {
-
+      //args = new[] { "-n", "Administrator", "-p", "11111", "-a", "importservicecategories", "-f", $@"\shared\importData\Категории услуг.xlsx" };
       logger.Info("=========================== Process Start ===========================");
       var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -191,6 +217,11 @@ namespace ImportData
           #region Аутентификация.
           ConfigSettingsService.SetSourcePath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DefaultConfigSettingsName));
           Client.Setup(login, password, logger);
+
+          IntegrationPassword = password;
+          IntegrationLogin = login;
+          IntegrationUrl = ConfigSettingsService.GetConfigSettingsValueByName(Constants.ConfigServices.IntegrationServiceUrlParamName);
+
           ConfigSettingsService.CheckConnectionToService(login, logger);
           #endregion
 

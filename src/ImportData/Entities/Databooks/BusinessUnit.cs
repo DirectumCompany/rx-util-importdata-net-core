@@ -10,7 +10,7 @@ namespace ImportData
     public override int PropertiesCount { get { return 21; } }
     protected override Type EntityType { get { return typeof(IBusinessUnits); } }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       if (ResultValues[Constants.KeyAttributes.HeadCompany] != null &&
          ((IBusinessUnits)ResultValues[Constants.KeyAttributes.HeadCompany]).Name == (string)ResultValues[Constants.KeyAttributes.Name])

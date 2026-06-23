@@ -25,7 +25,7 @@ namespace ImportData.IntegrationServicesClient.Models
       return BusinessLogic.CreateEntity(new ILogins()
       {
         LoginName = loginName,
-        TypeAuthentication = Constants.AttributeValue[Constants.KeyAttributes.TypeAuthentication],
+        TypeAuthentication = Constants.AuthenticationTypes.Password,
         NeedChangePassword = false,
         Status = Constants.AttributeValue[Constants.KeyAttributes.Status],
       }, exceptionList, logger);
@@ -40,10 +40,15 @@ namespace ImportData.IntegrationServicesClient.Models
 
     new public static IEntityBase CreateOrUpdate(IEntityBase entity, bool isNewEntity, bool isBatch, List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
-      if (isNewEntity)
-        return BusinessLogic.CreateEntity((ILogins)entity, exceptionList, logger);
-      else
-        return BusinessLogic.UpdateEntity((ILogins)entity, exceptionList, logger);
+      var login = (ILogins)entity;
+      if (login.TypeAuthentication == Constants.AuthenticationTypes.Windows)
+      {
+        if (isNewEntity)
+          return BusinessLogic.CreateEntity(login, exceptionList, logger);
+        else
+          return BusinessLogic.UpdateEntity(login, exceptionList, logger);
+      }
+      return BusinessLogic.CreateOrUpdateLoginWithPassword(logger, exceptionList, login, isNewEntity);
     }
   }
 }

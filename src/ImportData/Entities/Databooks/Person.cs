@@ -21,7 +21,7 @@ namespace ImportData
       return string.Format("{0} {1} {2}", lastName, firstName, middleName);
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.Name] = GetName();
       ResultValues[Constants.KeyAttributes.Sex] = BusinessLogic.GetPropertySex((string)ResultValues[Constants.KeyAttributes.Sex]);

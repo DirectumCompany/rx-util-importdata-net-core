@@ -8,7 +8,7 @@ namespace ImportData.Entities.Databooks
 {
   public class Login : Entity
   {
-    public override int PropertiesCount { get { return 5; } }
+    public override int PropertiesCount { get { return 6; } }
     protected override Type EntityType { get { return typeof(ILogins); } }
 
     public override IEnumerable<Structures.ExceptionsStruct> SaveToRX(NLog.Logger logger, string ignoreDuplicates, bool isBatch = false)
@@ -27,6 +27,14 @@ namespace ImportData.Entities.Databooks
       // Проверим, что сущность была создана.
       if (entity != null)
       {
+        var login = (ILogins)entity;
+
+        if (NamingParameters.ContainsKey(Constants.KeyAttributes.Password) &&
+            !string.IsNullOrWhiteSpace(NamingParameters[Constants.KeyAttributes.Password]))
+        {
+          exceptionList.AddRange(BusinessLogic.SetLoginPassword(logger, exceptionList, login, NamingParameters[Constants.KeyAttributes.Password]));
+        }
+
         // Добавляем информацию по логину для сотрудника и обновляем данные о сотруднике в системе.
         employee.Login = (ILogins)entity;
         MethodCall(employee.GetType(), Constants.EntityActions.CreateOrUpdate, employee, false, isBatch, exceptionList, logger);
@@ -35,10 +43,12 @@ namespace ImportData.Entities.Databooks
       return exceptionList;
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.NeedChangePassword] = false;
-      ResultValues[Constants.KeyAttributes.TypeAuthentication] = Constants.AttributeValue[Constants.KeyAttributes.TypeAuthentication];
+      var hasPassword = NamingParameters.ContainsKey(Constants.KeyAttributes.Password) &&
+                        !string.IsNullOrWhiteSpace(NamingParameters[Constants.KeyAttributes.Password]);
+      ResultValues[Constants.KeyAttributes.TypeAuthentication] = hasPassword ? Constants.AuthenticationTypes.Password : Constants.AuthenticationTypes.Windows;
       ResultValues[Constants.KeyAttributes.Status] = Constants.AttributeValue[Constants.KeyAttributes.Status];
 
       return false;
@@ -63,9 +73,9 @@ namespace ImportData.Entities.Databooks
         return false;
       }
 
-      var firstName = NamingParameters[Constants.KeyAttributes.FirstNameRu];
-      var middleName = NamingParameters[Constants.KeyAttributes.MiddleNameRu];
-      var lastName = NamingParameters[Constants.KeyAttributes.LastNameRu];
+      var firstName = NamingParameters[Constants.KeyAttributes.FirstNameRu].Trim();
+      var middleName = NamingParameters[Constants.KeyAttributes.MiddleNameRu].Trim();
+      var lastName = NamingParameters[Constants.KeyAttributes.LastNameRu].Trim();
       var email = NamingParameters[Constants.KeyAttributes.Email].Trim().ToLower();
 
       if (string.IsNullOrWhiteSpace(firstName))

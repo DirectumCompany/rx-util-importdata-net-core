@@ -59,7 +59,11 @@ namespace ClientApp.Store
             { "ImportLogins", "ImportLogins" },
             { "ImportSubstitutions", "ImportSubstitutions" },
             { "ImportCompanyDirectives", "ImportCompanyDirectives" },
-            { "ImportCaseFiles", "ImportCaseFiles" }
+            { "ImportCaseFiles", "ImportCaseFiles" },
+            { "КЕ", "ImportCmdb" },
+            { "Роли", "ImportRoles" },
+            { "Категории услуг", "ImportServiceCategories" },
+            { "Услуги", "ImportServices" }
             }
         },
         new UIVariable() { Name = UIControlsName.ImportPackagePath, Control = "file_control", DisplayName = "Путь до файла", Value = @"Template\Example\Договоры.xlsx", Description = "Укажите полный путь до файла импорта", NeedQuotes = true },

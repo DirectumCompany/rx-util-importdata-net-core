@@ -52,7 +52,7 @@ namespace ImportData.Entities.EDocs
       return string.Format("{0} \"{1}\"", documentKind, subject);
     }
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.Name] = GetName();
       ResultValues[Constants.KeyAttributes.Created] = (DateTimeOffset?)ResultValues[Constants.KeyAttributes.RegistrationDate];
