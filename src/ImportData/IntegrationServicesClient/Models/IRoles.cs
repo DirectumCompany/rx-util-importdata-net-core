@@ -31,8 +31,7 @@ namespace ImportData.IntegrationServicesClient.Models
         return BusinessLogic.CreateEntity((IRoles)entity, exceptionList, logger);
       else
       {
-        BusinessLogic.GetErrorResult(exceptionList, logger, Constants.Resources.EntityNotLoaded, entity.Name);
-        return null;
+        return BusinessLogic.UpdateEntity((IRoles)entity, exceptionList, logger);
       }
     }
 

@@ -12,7 +12,7 @@ namespace ImportData
     protected override Type EntityType { get { return typeof(IOutgoingLetterAddresseess); } }
     public override int RequestsPerBatch => 1;
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, Logger logger)
     {
       ResultValues[Constants.KeyAttributes.ManyAddresses] = true;
 

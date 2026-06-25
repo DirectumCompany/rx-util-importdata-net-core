@@ -14,7 +14,7 @@ namespace ImportData.Entities.Databooks
     // Количество по умолчанию в коробке RX.
     const int DefaultNumberOfDigitsInNumber = 3;
 
-    protected override bool FillProperies(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
+    protected override bool FillProperties(List<Structures.ExceptionsStruct> exceptionList, NLog.Logger logger)
     {
       ResultValues[Constants.KeyAttributes.RegisterType] = BusinessLogic.GetDocumentRegisterType((string)ResultValues[Constants.KeyAttributes.RegisterType]);
       ResultValues[Constants.KeyAttributes.DocumentFlow] = BusinessLogic.GetDocumentFlow((string)ResultValues[Constants.KeyAttributes.DocumentFlow]);
