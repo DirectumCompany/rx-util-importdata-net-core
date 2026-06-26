@@ -60,15 +60,15 @@
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[9.0.16, )",
-        "resolved": "9.0.16",
-        "contentHash": "ccPBYGLPJt8DeJTUzQ0JzOh/iuUAgnjayU63PokVywAhUOx+dzDKSPTL7AG94U/VpvNXflTT2AjsFAIF1+bXBw=="
+        "requested": "[9.0.17, )",
+        "resolved": "9.0.17",
+        "contentHash": "P5qY/hIYMlo0+QRM0W3Gd/SRf20TX+z5W5NwpdzkOk0FtgcbSTNwNcYBRNDgfThFcLpcDFslz65RcGqWOq00/w=="
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[9.0.16, )",
-        "resolved": "9.0.16",
-        "contentHash": "MI9fow+48epnN+CP4tgN50afl8aLmOWoWojSi9wB7JoYjLP57u+WnMX7BMDcmAtDxSYUFIbmnWWrJJBTNEwkdw=="
+        "requested": "[9.0.17, )",
+        "resolved": "9.0.17",
+        "contentHash": "fxw4s6C1WVB8pWenm2Q9tRkh6Av3++0iRJqqQkjvqjHhtGjyS0XG60RuGiWEJVwYCIgPA8GCINDeShqLoHnc9g=="
       },
       "MudBlazor": {
         "type": "Direct",

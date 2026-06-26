@@ -22,7 +22,7 @@ namespace Tests
         public const string ContactsPathXlsx = $@"{XlsxFolderPath}\Contacts.xlsx";
         public const string CaseFilePathXlsx = $@"{XlsxFolderPath}\CaseFile.xlsx";
         public const string ContractsPathXlsx = $@"{XlsxFolderPath}\Contracts.xlsx";
-        public const string AddendumsPathXlsx = $@"{XlsxFolderPath}\Supagreements.xlsx";
+        public const string AddendumsPathXlsx = $@"{XlsxFolderPath}\Addendums.xlsx";
         public const string SupagreementsPathXlsx = $@"{XlsxFolderPath}\Supagreements.xlsx";
         public const string IncomingLettersPathXlsx = $@"{XlsxFolderPath}\IncomingLetters.xlsx";
         public const string OutgoingLettersPathXlsx = $@"{XlsxFolderPath}\OutgoingLetters.xlsx";
