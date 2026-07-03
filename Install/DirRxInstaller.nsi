@@ -1,24 +1,24 @@
 ;!include MUI2.nsh
 LoadLanguageFile "${NSISDIR}\Contrib\Language files\Russian.nlf"
-; Переменные.
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 !define TEMP1 $R0 ;Temp variable
-; Наименование инсталятора.
-Name "утилита импорта данных"
-; Директория инсталяции.
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+Name "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ"
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 InstallDir "$PROGRAMFILES64\Directum Company\DirectumRX\ImportData"
-; Наименование инсталятора.
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 OutFile "Setup.exe"
 
 VIProductVersion 4.1.261086.0
 VIAddVersionKey FileVersion 4.1.261086.0
 VIAddVersionKey ProductVersion 4.1.261086.0
 XPStyle on
-; Управление страницами.
+; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 Page directory 
 Page instfiles
 
 Section "Components"
  SetOutPath $INSTDIR
- File /r "..\src\ImportData\bin\Debug\net6.0\*.*" 
+ File /r "..\src\ImportData\bin\Debug\net9.0\*.*" 
 SectionEnd
 
