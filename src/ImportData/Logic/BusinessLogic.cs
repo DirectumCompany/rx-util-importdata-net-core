@@ -59,16 +59,6 @@ namespace ImportData
       return null;
     }
 
-    /// <summary>
-    /// Получение экземпляра клиента OData.
-    /// </summary>
-    /// <returns>ODataClient.</returns>
-    /// <remarks></remarks>
-    public static ODataClient InstanceOData()
-    {
-      return Client.Instance();
-    }
-
     #region Работа с сервисом интеграции.
     /// <summary>
     /// Получение сущности по фильтру.
@@ -113,75 +103,6 @@ namespace ImportData
         if (ex.Message.Contains("(Unauthorized)"))
           throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
 
-      }
-      return null;
-    }
-
-    /// <summary>
-    /// Получение сущностей по фильтру.
-    /// </summary>
-    /// <typeparam name="T">Тип сущности.</typeparam>
-    /// <param name="expression">Условие фильтрации.</param>
-    /// <param name="exceptionList">Список ошибок.</param>
-    /// <param name="logger">Логгер</param>
-    /// <returns>Сущности.</returns>
-    public static IEnumerable<T> GetEntitiesWithFilter<T>(Expression<Func<T, bool>> expression, List<Structures.ExceptionsStruct> exceptionList, Logger logger, bool isExpand = false) where T : class
-    {
-      Expression<Func<T, bool>> condition = expression;
-      var filter = new ODataExpression(condition);
-
-      logger.Info(string.Format("Получение сущностей {0}", PrintInfo(typeof(T))));
-
-      try
-      {
-        var entities = Client.GetEntitiesByFilter<T>(filter, isExpand);
-
-        return entities ?? Enumerable.Empty<T>();
-      }
-      catch (Exception ex)
-      {
-        if (ex.InnerException is WebRequestException webEx)
-        {
-          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
-          logger.Error(message);
-          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        }
-
-        if (ex.Message.Contains("(Not Found)"))
-          throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
-
-        if (ex.Message.Contains("(Unauthorized)"))
-          throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
-      }
-      return Enumerable.Empty<T>();
-    }
-
-    /// <summary>
-    /// Получение сущностей.
-    /// </summary>
-    /// <typeparam name="T">Тип сущности.</typeparam>
-    /// <returns>Список сущностей.</returns>
-    public static IEnumerable<T> GetEntities<T>(List<Structures.ExceptionsStruct> exceptionList, Logger logger) where T : class
-    {
-      try
-      {
-        var entities = Client.GetEntities<T>();
-        return entities;
-      }
-      catch (Exception ex)
-      {
-        if (ex.InnerException is WebRequestException webEx)
-        {
-          var message = $"Ошибка на стороне Directum RX. Код ошибки: {webEx.Code}, Причина: {webEx.ReasonPhrase}, Ответ сервиса интеграции: {webEx.Response}";
-          logger.Error(message);
-          exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Error, Message = message });
-        }
-
-        if (ex.Message.Contains("(Not Found)"))
-          throw new FoundMatchesException("Проверьте коррекность адреса службы интеграции Directum RX.");
-
-        if (ex.Message.Contains("(Unauthorized)"))
-          throw new FoundMatchesException("Проверьте коррекность указанной учетной записи.");
       }
       return null;
     }
@@ -451,50 +372,6 @@ namespace ImportData
       return exceptions;
     }
 
-    /// <summary>
-    /// Регистрация документа.
-    /// </summary>
-    /// <param name="edoc">Экземпляр документа.</param>
-    /// <param name="documentRegisterId">ИД журнала регистрации.</param>
-    /// <param name="regNumber">Рег. №</param>
-    /// <param name="regDate">Дата регистрации.</param>
-    /// <param name="logger">Логировщик.</param>
-    /// <returns>Список ошибок.</returns>
-    public static IEnumerable<Structures.ExceptionsStruct> RegisterDocument(IOfficialDocuments edoc, long documentRegisterId, string regNumber, DateTimeOffset regDate, Guid defaultRegistrationRoleGuid, Logger logger)
-    {
-      var exceptionList = new List<Structures.ExceptionsStruct>();
-
-      IRegistrationGroups regGroup = null;
-
-      // TODO Кэшировать.
-      var documentRegister = BusinessLogic.GetEntityWithFilter<IDocumentRegisters>(d => d.Id == documentRegisterId, exceptionList, logger);
-
-      if (documentRegister != null && regDate != null && !string.IsNullOrEmpty(regNumber))
-      {
-        edoc.RegistrationDate = regDate;
-        edoc.RegistrationNumber = regNumber;
-        edoc.DocumentRegister = documentRegister;
-        edoc.RegistrationState = BusinessLogic.GetRegistrationsState("Registerd");
-        regGroup = documentRegister.RegistrationGroup;
-      }
-      else
-      {
-        var message = string.Format("Не удалось найти соответствующий реестр с ИД \"{0}\".", documentRegisterId);
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = message });
-        logger.Warn(message);
-      }
-
-      try
-      {
-        BusinessLogic.UpdateEntity<IOfficialDocuments>(edoc, exceptionList, logger);
-      }
-      catch (Exception ex)
-      {
-        exceptionList.Add(new Structures.ExceptionsStruct { ErrorType = Constants.ErrorTypes.Warn, Message = ex.Message });
-      }
-
-      return exceptionList;
-    }
     #endregion
 
     #region Словари с перечислениями.
