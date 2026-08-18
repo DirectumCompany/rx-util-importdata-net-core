@@ -120,7 +120,7 @@ namespace ClientApp.Store
     public async Task Import(string arguments)
     {
       Console.WriteLine($"Operation: Import");
-      await this.apiClient.GetAsync($"api/import?arguments={arguments}"); ;
+      await this.apiClient.GetAsync($"api/import?arguments={Uri.EscapeDataString(arguments)}");
     }
 
     public async Task GetOutputData()
