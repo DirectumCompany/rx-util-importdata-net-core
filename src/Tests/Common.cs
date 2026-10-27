@@ -47,7 +47,7 @@ namespace Tests
         /// <param name="value">Значение.</param>
         /// <returns>Преобразованная дата.</returns>
         /// <exception cref="FormatException" />
-        public static DateTimeOffset ParseDate(string? value)
+        public static DateTimeOffset? ParseDate(string? value)
         {
             var style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol;
             var culture = CultureInfo.CreateSpecificCulture("en-GB");
@@ -65,7 +65,7 @@ namespace Tests
                 throw new FormatException("Неверный формат строки.");
             }
             else
-                return DateTimeOffset.MinValue;
+                return null;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Tests
                 docRegisterId = -1;
             var document = BusinessLogic.GetEntityWithFilter<T>(x => x.RegistrationNumber != null &&
                                                                                     x.RegistrationNumber == regNumber &&
-                                                                                    x.RegistrationDate.Value.ToString("d") == regDate.ToString("d") &&
+                                                                                    x.RegistrationDate.Value.ToString("d") == regDate.Value.ToString("d") &&
                                                                                     (checkDocRegister || x.DocumentRegister.Id == docRegisterId),
                                                                                     exceptionList, TestSettings.Logger, true);
             return document;
@@ -100,7 +100,8 @@ namespace Tests
         /// <returns>Имя документа.</returns>
         public static string GetDocumentName(string docKind, string regNumber, string regDate, string subject)
         {
-            return $"{docKind} Номер {regNumber} от {regDate} \"{subject}\"";
+          var date = IEntityBase.GetDate(regDate);
+          return $"{docKind} Номер {regNumber} от {date.Value:dd.MM.yyyy} \"{subject}\"";
         }
 
         #region Методы сравнения.

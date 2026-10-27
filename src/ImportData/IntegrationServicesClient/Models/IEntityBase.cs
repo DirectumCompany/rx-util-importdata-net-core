@@ -48,36 +48,39 @@ namespace ImportData.IntegrationServicesClient.Models
     }
 
     /// <summary>
-    /// Преобразовать в DateTimeOffset строку.
+    /// Преобразовать строку в DateTimeOffset.
     /// </summary>
     /// <param name="regDate">Строка для преобразования.</param>
-    /// <returns>Результат преобразования.</returns>
-    public static bool GetDate(string regDate, out DateTimeOffset registrationDate)
+    /// <param name="registrationDate">Выходной параметр с датой.</param>
+    /// <returns>True, если получилось преобразовать.</returns>
+    public static bool GetDate(string regDate, out DateTimeOffset? registrationDate)
     {
       if (double.TryParse(regDate, out var date))
       {
         registrationDate = new DateTimeOffset(DateTime.FromOADate(date), TimeSpan.Zero);
+        if (!registrationDate.HasValue)
+          return false;
         // HACK: СИ работает с учетом часового пояса, и документы хранит с учетом поправки на часовой пояс, приведем дату к часовому поясу рабочего места.
-        registrationDate = DateTimeOffset.Parse(registrationDate.ToString("yyyy-MM-dd"));
+        registrationDate = DateTimeOffset.Parse(registrationDate.Value.ToString("yyyy-MM-dd"));
         return true;
       }
-      registrationDate = DateTimeOffset.MinValue;
+      registrationDate = null;
       return false;
     }
 
     /// <summary>
-    /// Преобразовать в DateTimeOffset строку.
+    /// Преобразовать строку в DateTimeOffset.
     /// </summary>
     /// <param name="regDate">Строка для преобразования.</param>
-    /// <returns>Результат преобразования.</returns>
-    public static DateTimeOffset GetDate(string regDate)
+    /// <returns>True, если получилось преобразовать.</returns>
+    public static DateTimeOffset? GetDate(string regDate)
     {
-      DateTimeOffset registrationDate = DateTimeOffset.MinValue;
+      DateTimeOffset? registrationDate = null;
       if (double.TryParse(regDate, out var date))
       {
         registrationDate = new DateTimeOffset(DateTime.FromOADate(date), TimeSpan.Zero);
-        registrationDate = DateTimeOffset.Parse(registrationDate.ToString("yyyy-MM-dd"));
-        return registrationDate;
+        if (registrationDate.HasValue)
+          registrationDate = DateTimeOffset.Parse(registrationDate.Value.ToString("yyyy-MM-dd"));
       }
       return registrationDate;
     }
