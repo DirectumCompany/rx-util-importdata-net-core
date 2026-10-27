@@ -51,7 +51,7 @@ namespace Tests.EDocs
       var name = Common.GetDocumentName(parameters[shift + 5], parameters[shift + 0], parameters[shift + 1], parameters[shift + 6]);
 
       if (leadingDocument == null)
-        return $"Не найден ведущий документ: №{leadingDocumentNumber} от {leadingDocumentDate}";
+        return $"Не найден ведущий документ: №{leadingDocumentNumber} от {leadingDocumentDate:dd.MM.yyyy}";
 
       if (actualSupAgreement == null)
         return $"Не найдено дополнительное соглашение: {name}";

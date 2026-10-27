@@ -26,7 +26,7 @@ namespace ImportData.IntegrationServicesClient.Models
 
       if (GetDate(propertiesForSearch[Constants.KeyAttributes.RegistrationDate], out var registrationDate))
       {
-        var name = $"{documentKindName} №{registrationNumber} от {registrationDate.ToString("dd.MM.yyyy")} \"{subject}\"";
+        var name = $"{documentKindName} №{registrationNumber} от {registrationDate.Value:dd.MM.yyyy} \"{subject}\"";
         return BusinessLogic.GetEntityWithFilter<ICompanyDirective>(x => x.Name == name, exceptionList, logger);
       }
 
