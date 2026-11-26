@@ -33,10 +33,10 @@ rx-util-importdata-net-core/
 
 | Проект | Тип | .NET | Назначение |
 |---|---|---|---|
-| `ImportData` | Console App / Class Lib | net6.0 | Ядро — логика импорта через OData |
-| `Tests` | xUnit Test Project | net6.0 | Интеграционные тесты |
-| `ClientApp` | Blazor WebAssembly | net6.0 | Веб-интерфейс (SPA) |
-| `ImportUtilServer` | ASP.NET Core Web | net6.0 | Хост для Blazor + REST API |
+| `ImportData` | Console App / Class Lib | net9.0 | Ядро — логика импорта через OData |
+| `Tests` | xUnit Test Project | net9.0 | Интеграционные тесты |
+| `ClientApp` | Blazor WebAssembly | net9.0 | Веб-интерфейс (SPA) |
+| `ImportUtilServer` | ASP.NET Core Web | net9.0 | Хост для Blazor + REST API |
 
 ---
 
@@ -47,7 +47,7 @@ rx-util-importdata-net-core/
 │                      Web UI Mode                         │
 │  ┌─────────────┐   HTTP   ┌──────────────────────────┐  │
 │  │  ClientApp  │ ◄──────► │   ImportUtilServer       │  │
-│  │ Blazor WASM │          │  ASP.NET Core 6          │  │
+│  │ Blazor WASM │          │  ASP.NET Core 9          │  │
 │  │ (MudBlazor) │          │  ImportController        │  │
 │  └─────────────┘          └──────────┬───────────────┘  │
 └─────────────────────────────────────┼───────────────────┘
